@@ -3,451 +3,610 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EGO // THE MANIFESTO</title>
-    
+    <title>EGO | Physics Prodigy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Three.js for Cinematic Black Hole Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Editorial Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
-        :root { 
-            --red: #5a0000;
-            --blood: #8B0000; /* Deep, dark blood red. Pure contrast. */
-            --sandevistan-green: #00ff9d;
-            --bg-color: #000000; /* Pure Pitch Black */
+        :root {
+            --blood: #990000;
+            --void: #050505;
+            --text-main: #e5e5e5;
+            --text-muted: #666666;
         }
         
-        body { 
-            background: var(--bg-color); 
-            color: #d1d1d1; 
+        body {
+            background-color: var(--void);
+            color: var(--text-main);
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
-            cursor: none; 
+            cursor: none; /* Custom cursor */
         }
 
-        /* Typography Stack */
-        .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
-        .font-mono { font-family: 'Space Mono', monospace; }
-
-        /* Custom Cursor - Thinner, sharper, blood red on hover */
-        .cursor-dot {
-            width: 4px; height: 4px; background: white; border-radius: 0;
-            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%); transition: background-color 0.3s;
-        }
-        .cursor-ring {
-            width: 30px; height: 30px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0;
-            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
-            transform: translate(-50%, -50%); transition: transform 0.2s ease-out, border-color 0.3s;
-        }
-        
-        /* Hover States for Cursor */
-        a:hover ~ .cursor-dot, button:hover ~ .cursor-dot, .hover-target:hover ~ .cursor-dot { 
-            background: var(--blood); transform: translate(-50%, -50%) scale(2); 
-        }
-        a:hover ~ .cursor-ring, button:hover ~ .cursor-ring, .hover-target:hover ~ .cursor-ring { 
-            transform: translate(-50%, -50%) rotate(45deg) scale(1.5); border-color: var(--blood); background: transparent;
+        h1, h2, h3, .bebas {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.05em;
         }
 
-        /* Three.js Canvas */
-        #bg-canvas { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: -1; opacity: 0.6; pointer-events: none; 
+        .mono {
+            font-family: 'Space Mono', monospace;
         }
 
-        /* Slow, deliberate reveals */
-        .reveal { 
-            opacity: 0; transform: translateY(30px); 
-            transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        /* The Custom Cursor */
+        #cursor-dot, #cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
         }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        .reveal-delay-1 { transition-delay: 0.2s; }
+        #cursor-dot {
+            width: 6px; height: 6px;
+            background-color: var(--blood);
+            transition: width 0.2s, height 0.2s;
+        }
+        #cursor-ring {
+            width: 30px; height: 30px;
+            border: 1px solid rgba(153, 0, 0, 0.5);
+            transition: width 0.2s, height 0.2s, border-color 0.2s, transform 0.1s ease-out;
+        }
 
-        /* Editorial Project Cards - Brutalist */
-        .project-card { 
-            background: transparent;
-            border-top: 1px solid rgba(139, 0, 0, 0.3); /* Dark red borders */
-            transition: all 0.5s ease;
-            position: relative;
-            padding: 3rem 0;
+        /* 3D Background Container */
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            background: #000000; /* Pure black to blend with the event horizon */
         }
-        .project-card::before {
-            content: ''; position: absolute; top: -1px; left: 0; width: 0%; height: 1px;
-            background: var(--blood);
-            transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .project-card:hover { 
-            border-color: rgba(139, 0, 0, 0.1);
-        }
-        .project-card:hover::before { width: 100%; }
-        
-        .project-card:hover h3 { color: white; letter-spacing: 0.05em; }
-        h3 { transition: all 0.5s ease; }
 
-        /* Sandevistan Modal */
-        #sandy-overlay {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
-            border: 1px solid var(--sandevistan-green); z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        /* Brutalist Borders & Aesthetics */
+        .brutal-border {
+            border: 1px solid #1a1a1a;
+            border-left: 3px solid var(--blood);
+            background: rgba(5, 5, 5, 0.6);
+            backdrop-filter: blur(5px);
         }
-        #sandy-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        /* AURA Text - Pure stark contrast */
+
+        .brutal-border:hover {
+            border-color: var(--blood);
+            background: rgba(15, 0, 0, 0.8);
+        }
+
+        /* Aura Text Effect */
         .aura-text {
-            color: var(--blood);
-            transition: color 0.3s ease;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--blood);
+            transition: all 0.4s ease;
+            position: relative;
         }
         
-        .hover-bleed:hover {
+        .aura-text::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0; top: 0;
             color: var(--blood);
+            width: 0%;
+            overflow: hidden;
+            transition: width 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            white-space: nowrap;
+            text-shadow: 0 0 20px var(--blood);
         }
 
-        /* Hide scrollbar for a cleaner look */
+        .group:hover .aura-text::before,
+        .aura-text:hover::before {
+            width: 100%;
+        }
+
+        /* God-Complex Glitch */
+        .glitch-hover:hover {
+            animation: glitch-anim 0.2s infinite;
+            color: var(--blood);
+            text-shadow: 2px 0 0 #fff, -2px 0 0 #ff0000;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 1px) }
+            40% { transform: translate(-1px, -1px) }
+            60% { transform: translate(2px, 1px) }
+            80% { transform: translate(1px, -1px) }
+            100% { transform: translate(0) }
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* NEW: Cinematic Grain & Boot Screen */
+        .grain {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.5"/%3E%3C/svg%3E');
+            opacity: 0.05;
+            mix-blend-mode: screen;
+        }
+
+        .boot-screen {
+            position: fixed;
+            inset: 0;
+            background: #030303;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 10%;
+            transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #111; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: var(--void); }
+        ::-webkit-scrollbar-thumb { background: #333; }
         ::-webkit-scrollbar-thumb:hover { background: var(--blood); }
     </style>
 </head>
-<body class="selection:bg-red-900 selection:text-white">
+<body class="antialiased selection:bg-[#990000] selection:text-white">
 
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
+    <!-- NEW: Cinematic Overlays -->
+    <div class="grain"></div>
+    <div id="boot-screen" class="boot-screen">
+        <div id="boot-text" class="mono text-[#990000] text-sm md:text-base leading-relaxed tracking-widest whitespace-pre-wrap"></div>
+    </div>
 
-    <!-- Background Canvas -->
-    <canvas id="bg-canvas"></canvas>
+    <!-- Custom Cursor DOM -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
 
-    <header class="min-h-screen flex flex-col justify-center px-6 md:px-24 relative pt-20 pb-10">
-        <div class="absolute top-8 left-6 md:left-24 flex gap-6 text-xs tracking-widest font-mono text-blood uppercase">
-            <span>// CLASS_OF_202X</span>
+    <!-- 3D Gargantua Black Hole Engine -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 mix-blend-difference border-b border-[#1a1a1a]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-20 text-xs mono uppercase tracking-widest text-gray-400">
+                <a href="#home" class="hover:text-white transition-colors">[ EGO_V1.0 ]</a>
+                <div class="hidden md:flex space-x-12">
+                    <a href="#about" class="hover:text-[#990000] transition-colors">01. IDENT</a>
+                    <a href="#projects" class="hover:text-[#990000] transition-colors">02. ARSENAL</a>
+                    <a href="#contact" class="hover:text-[#990000] transition-colors">03. CLINIC</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="min-h-screen flex items-center relative z-10 pt-20">
+        <div class="max-w-7xl mx-auto px-6 w-full">
+            <div class="max-w-4xl">
+                <p class="mono text-[#990000] text-sm md:text-base mb-6 tracking-widest uppercase">Target: MIT Aerospace & Physics</p>
+                <h1 class="text-7xl md:text-[150px] leading-[0.8] mb-8 glitch-hover cursor-interact" data-text="I AM EGO.">
+                    I AM EGO.
+                </h1>
+                
+                <div class="brutal-border p-6 md:p-8 max-w-2xl mt-12">
+                    <p class="text-xl md:text-2xl font-light leading-relaxed">
+                        My name is Ego. I am a high school physicist. And I am going to steal your lab time.
+                    </p>
+                    <p class="mt-4 text-gray-500 text-sm mono uppercase tracking-wider">
+                        Grade 11 // Physics Prodigy // State Athlete
+                    </p>
+                </div>
+            </div>
         </div>
         
-        <div class="reveal max-w-6xl">
-            <h1 class="font-bebas text-[20vw] md:text-[14vw] leading-[0.75] tracking-normal mb-6 text-white hover-bleed cursor-default transition-colors duration-700">
-                EGO.
-            </h1>
-            <h2 class="font-mono text-gray-500 tracking-[0.3em] mb-12 text-xs md:text-sm uppercase border-l-2 border-blood pl-4">
-                Grade 11. State Athlete. Applied Physics.
-            </h2>
-            <h3 class="font-bebas text-5xl md:text-7xl mb-8 text-gray-500 hover-target transition-all duration-500">
-                TARGET: <span class="text-white">M.I.T.</span>
-            </h3>
-            
-            <p class="text-lg md:text-2xl max-w-3xl font-light text-gray-400 leading-relaxed">
-                My name is Ego. I'm a high school junior. I'm building a suborbital rocket in my garage, simulating orbital mechanics from scratch, and coming for lab time in Massachusetts.
-            </p>
-
-            <div class="flex flex-wrap gap-8 text-xs font-mono mt-16 border-t border-blood/30 pt-6 text-gray-500 uppercase tracking-widest">
-                <span class="hover:text-blood transition-colors cursor-default">AEROSPACE</span>
-                <span>•</span>
-                <span class="hover:text-blood transition-colors cursor-default">THERMODYNAMICS</span>
-                <span>•</span>
-                <span class="hover:text-blood transition-colors cursor-default">TENSOR CALCULUS</span>
-            </div>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-6 mono text-xs text-gray-600 tracking-widest uppercase animate-pulse">
+            [ Scroll to Execute ]
         </div>
     </header>
 
-    <section class="py-32 px-6 md:px-24 relative border-t border-blood/30">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid lg:grid-cols-12 gap-20 items-start">
+    <!-- About Section -->
+    <section id="about" class="py-32 relative z-10 border-t border-[#1a1a1a]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                <div class="md:col-span-4 reveal">
+                    <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">01 // IDENT</h2>
+                    <h3 class="text-5xl md:text-7xl aura-text cursor-interact" data-text="THE BLUEPRINT">THE BLUEPRINT</h3>
+                </div>
                 
-                <!-- The Athlete / The Scientist -->
-                <div class="lg:col-span-7 reveal">
-                    <h2 class="font-bebas text-5xl md:text-7xl mb-12 text-white">THE <span class="aura-text">BLUEPRINT</span></h2>
-                    <div class="space-y-12 text-base md:text-lg text-gray-400 font-light leading-relaxed">
-                        <p class="font-bebas text-4xl md:text-5xl text-white tracking-wide leading-tight border-l-4 border-blood pl-6 py-2">
-                            "I DO NOT COMPETE WITH MY PEERS. <br><span class="aura-text">I OBSOLETE THEM.</span>"
-                        </p>
+                <div class="md:col-span-8 space-y-12 reveal">
+                    <div class="text-2xl md:text-4xl font-light leading-tight space-y-8">
                         <p>
-                            Most people look at a basketball game and see sport. I see a chaotic system of parabolic trajectories, kinetic energy transfer, and biomechanical leverage. 
-                            <span class="text-white font-semibold">I play basketball for the State</span> because I understand the physics of the court better than the opposition understands the game. 
+                            I don't study physics to pass exams. I study physics because it is the source code of reality, and I intend to have admin access.
                         </p>
-                        <p class="font-mono text-xs text-blood uppercase tracking-widest">
-                            // I don't guess. I observe.
-                        </p>
-                        <p>
-                            The same applies to my academic life. I don't study physics to pass a test. I study it to manipulate reality. Whether it's mapping gravitational lensing or building engines from raw materials, my foundation is entirely mathematical.
+                        
+                        <!-- The Manifesto Blockquote -->
+                        <blockquote class="border-l-4 border-[#990000] pl-6 py-2 my-12 bg-[#050505] mix-blend-screen">
+                            <p class="text-gray-400 text-lg mono mb-2 uppercase">Core Philosophy:</p>
+                            <p class="text-3xl md:text-5xl font-bold italic">
+                                "I DO NOT COMPETE WITH MY PEERS. <br>
+                                <span class="text-[#990000]">I OBSOLETE THEM.</span>"
+                            </p>
+                        </blockquote>
+
+                        <p class="text-gray-400 text-lg md:text-xl font-normal max-w-2xl">
+                            When I'm not running tensor calculus for aerodynamic simulations, I play basketball at the state level. The court isn't just a game; it's applied kinematics. Like Patrick Jane said: 
+                            <span class="text-white italic">"I don't guess. I observe."</span> I calculate the arc, the backspin, the friction. It's all math.
                         </p>
                     </div>
                 </div>
-
-                <!-- The Kanye Principle / MBDTF -->
-                <div class="lg:col-span-5 reveal reveal-delay-1 flex flex-col gap-8 pt-4">
-                    <div>
-                        <h3 class="font-bebas text-3xl mb-4 text-white tracking-widest">THE KANYE PRINCIPLE</h3>
-                        <p class="text-gray-500 mb-8 text-sm leading-relaxed">
-                            A study in maximalism and perfectionism. If Kanye can restructure the entire sonic landscape of a generation with one album, I can restructure how we approach aerospace engineering at home. The application is a performance. The rocket is the piece. MIT is just the venue.
-                        </p>
-                        <!-- Apple Music Embed - Styled darkly -->
-                        <div class="grayscale hover:grayscale-0 transition-all duration-700 opacity-70 hover:opacity-100 border border-blood/20">
-                            <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="152" style="width:100%;max-width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/my-beautiful-dark-twisted-fantasy-deluxe-edition-explicit/1440621197"></iframe>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
 
-    <section class="py-32 px-6 md:px-24 border-t border-blood/30">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 reveal">
-                <div>
-                    <h2 class="font-bebas text-6xl md:text-8xl leading-none text-white cursor-default hover-bleed transition-colors">THE_ARSENAL</h2>
-                    <p class="font-mono text-blood mt-6 uppercase tracking-[0.2em] text-xs font-bold">Not Lupus. Just Math.</p>
+    <!-- Projects Section -->
+    <section id="projects" class="py-32 relative z-10 bg-black/50 border-t border-[#1a1a1a]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-20 reveal group">
+                <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">02 // ARSENAL</h2>
+                <h3 class="text-5xl md:text-[100px] leading-none aura-text cursor-interact" data-text="THE_ARSENAL">THE_ARSENAL</h3>
+                <p class="text-[#990000] mono text-sm mt-4 uppercase">Not Lupus. Just Math.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Pulsejet -->
+                <div class="brutal-border p-8 reveal cursor-interact group">
+                    <div class="flex justify-between items-start mb-12">
+                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">01</span>
+                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Acoustics & Thermodynamics</span>
+                    </div>
+                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Valveless Pulsejet Engine</h4>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        Built entirely in my backyard. Applied principles of acoustic resonance and fluid dynamics to create self-sustaining combustion. 
+                        It is incredibly inefficient, extremely dangerous, and loud enough to deafen the neighborhood. It works perfectly.
+                    </p>
                 </div>
+
+                <!-- Black Hole -->
+                <div class="brutal-border p-8 reveal cursor-interact group">
+                    <div class="flex justify-between items-start mb-12">
+                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">02</span>
+                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">C++ / Runge-Kutta Math</span>
+                    </div>
+                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Schwarzschild Simulator</h4>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        Wrote a pure C++ raymarching engine to simulate photon trajectories around a non-rotating black hole. 
+                        No game engines. Just raw differential equations and the Schwarzschild metric solving light paths frame-by-frame.
+                    </p>
+                </div>
+
+                <!-- Meteor Telescope -->
+                <div class="brutal-border p-8 reveal cursor-interact group">
+                    <div class="flex justify-between items-start mb-12">
+                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">03</span>
+                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Optics & Hardware</span>
+                    </div>
+                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Autonomous Meteor Array</h4>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        Custom-built optical telescope rigged to a tracking mount I programmed from scratch. It uses computer vision to detect and track fast-moving atmospheric entries (meteors) while filtering out satellites. 
+                    </p>
+                </div>
+
+                <!-- Apollo's Bastard -->
+                <div class="brutal-border p-8 reveal cursor-interact group">
+                    <div class="flex justify-between items-start mb-12">
+                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">04</span>
+                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Target: The Moon</span>
+                    </div>
+                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Project: Apollo's Bastard</h4>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        Current ongoing endeavor. The math is done. The propellants are calculated. MIT is just the funding pitstop I need before I launch a homemade orbital payload. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 relative z-10 border-t border-[#1a1a1a]">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">03 // CLINIC</h2>
+                <h3 class="text-5xl md:text-7xl font-bold mb-6">THE CLINIC</h3>
+                <p class="text-gray-400 mono max-w-lg mx-auto">
+                    "Everybody lies. Math doesn't." <br>
+                    Admissions officers, engineers, or people who just appreciate greatness—step into the clinic.
+                </p>
             </div>
             
-            <div class="grid grid-cols-1 gap-4">
+            <form class="space-y-6 reveal">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs mono text-gray-500 mb-2 uppercase">Subject ID (Name)</label>
+                        <input type="text" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="Dr. Gregory House">
+                    </div>
+                    <div>
+                        <label class="block text-xs mono text-gray-500 mb-2 uppercase">Clearance Level (Email)</label>
+                        <input type="email" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="admissions@mit.edu">
+                    </div>
+                </div>
+                <div class="pt-4">
+                    <label class="block text-xs mono text-gray-500 mb-2 uppercase">Diagnosis (The Message)</label>
+                    <textarea rows="4" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="Your calculus on the pulsejet was undeniable..."></textarea>
+                </div>
                 
-                <!-- Project 1: Rockets -->
-                <div class="project-card reveal hover-target grid md:grid-cols-12 gap-8 items-start">
-                    <div class="md:col-span-3">
-                        <span class="font-mono text-xs text-blood uppercase tracking-widest">01 // HARDWARE</span>
-                    </div>
-                    <div class="md:col-span-9">
-                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">APOLLO'S BASTARD</h3>
-                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
-                            DIY Aerospace. Calculating thrust-to-weight ratios that make established engineers sweat. Designing and machining the solid-propellant hardware required to push past the Karman line entirely from my backyard. 
-                        </p>
-                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
-                            // David couldn't take Lucy to the moon. I'm building the hardware to do it myself.
-                        </p>
-                    </div>
+                <div class="pt-8 text-center group">
+                    <button type="button" class="cursor-interact relative overflow-hidden border border-gray-800 px-12 py-4 mono uppercase tracking-widest text-sm hover:border-[#990000] transition-colors w-full md:w-auto">
+                        <span class="relative z-10 group-hover:text-black transition-colors duration-300 font-bold">Initiate Transmission</span>
+                        <div class="absolute inset-0 bg-[#990000] transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0 flex items-center justify-center">
+                            <span class="text-black font-bold">WAKE UP SAMURAI</span>
+                        </div>
+                    </button>
                 </div>
-
-                <!-- Project 2: Pulsejet -->
-                <div class="project-card reveal reveal-delay-1 hover-target grid md:grid-cols-12 gap-8 items-start">
-                    <div class="md:col-span-3">
-                        <span class="font-mono text-xs text-blood uppercase tracking-widest">02 // THERMODYNAMICS</span>
-                    </div>
-                    <div class="md:col-span-9">
-                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">RESONANCE_01</h3>
-                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
-                            A fully functional valveless pulsejet engine. Harnessing acoustic resonance, fluid dynamics, and raw combustion. Engineered the combustion chamber geometry to maximize acoustic wave reflection, creating a self-sustaining detonation cycle.
-                        </p>
-                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
-                            // Efficiency is a myth. Thrust is reality.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Project 3: Black Hole Sim -->
-                <div class="project-card reveal hover-target grid md:grid-cols-12 gap-8 items-start">
-                    <div class="md:col-span-3">
-                        <span class="font-mono text-xs text-blood uppercase tracking-widest">03 // ASTROPHYSICS</span>
-                    </div>
-                    <div class="md:col-span-9">
-                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">ACCRETION DISK_V2.0</h3>
-                        <p class="text-gray-400 mb-6 font-light text-lg max-w-3xl leading-relaxed">
-                            A real-time, volumetric Black Hole visualizer built entirely from scratch in C++ and OpenGL. By numerically integrating the geodesic equations using a 4th-order Runge-Kutta (RK4) method, I simulated the exact photon paths bent by extreme gravity. The engine natively calculates Doppler beaming, gravitational redshift, and raymarches the Schwarzschild metric.
-                        </p>
-                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
-                            // No external physics libraries. Just raw tensor calculus.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Project 4: Meteor Telescope -->
-                <div class="project-card reveal reveal-delay-1 hover-target grid md:grid-cols-12 gap-8 items-start">
-                    <div class="md:col-span-3">
-                        <span class="font-mono text-xs text-blood uppercase tracking-widest">04 // OPTICS</span>
-                    </div>
-                    <div class="md:col-span-9">
-                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">DEAD SPACE TRACKER</h3>
-                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
-                            Custom-built meteor telescope. Engineered the optics and wrote the tracking algorithms to map high-velocity orbital debris and celestial bodies against the night sky, logging trajectory data automatically.
-                        </p>
-                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
-                            // The sky isn't a limit. It's a coordinate system.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
+            </form>
         </div>
     </section>
 
-    <footer class="h-[70vh] flex flex-col items-center justify-center relative overflow-hidden group border-t border-blood/30 bg-black">
-        <p class="font-mono text-gray-600 mb-8 tracking-[0.3em] text-sm z-10 text-center px-4">
-            INITIATE LAUNCH SEQUENCE
-        </p>
-        
-        <button id="activate" class="font-bebas text-7xl md:text-[10vw] text-white hover:text-blood transition-all duration-300 z-10 leading-none hover-target">
-            OVERRIDE
-        </button>
-        
-        <p class="font-mono text-gray-600 mt-12 text-xs z-10 max-w-md text-center">
-            Admissions officers: The application is submitted. The rest is physics.
+    <footer class="py-8 border-t border-[#1a1a1a] text-center relative z-10 bg-black">
+        <p class="mono text-xs text-gray-600">
+            ENGINEERED BY EGO // HTML. CSS. RAW MATH. <br>
+            <span class="opacity-30 hover:opacity-100 hover:text-[#990000] transition-all cursor-crosshair">:-)</span>
         </p>
     </footer>
 
-    <!-- Sandevistan Modal -->
-    <div id="sandy-overlay">
-        <div class="scanline"></div>
-        <h1 class="font-bebas text-7xl md:text-[10vw] text-[var(--sandevistan-green)] text-center leading-none mb-2 tracking-widest" style="text-shadow: 0 0 30px var(--sandevistan-green);">
-            SANDEVISTAN<br>ACTIVE
-        </h1>
-        <p class="font-mono text-white text-lg md:text-xl mt-6 tracking-[0.2em] uppercase bg-black/50 px-4 py-2 border border-[var(--sandevistan-green)]">
-            Synaptic Accelerator at 100%
-        </p>
-        <button id="deactivate" class="mt-16 border border-[var(--sandevistan-green)] text-[var(--sandevistan-green)] px-10 py-4 font-mono text-sm hover:bg-[var(--sandevistan-green)] hover:text-black transition-all hover-target uppercase tracking-widest">
-            Disengage
-        </button>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Interactive Logic & Physics Engine -->
     <script>
-        // Custom Cursor Logic
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorRing = document.querySelector('.cursor-ring');
+        // =====================================================================
+        // UI & BOOT LOGIC
+        // =====================================================================
+        const bootScreen = document.getElementById('boot-screen');
+        const bootText = document.getElementById('boot-text');
+        const bootLines = [
+            "INITIALIZING EGO_V1.0...",
+            "BYPASSING STANDARD ADMISSIONS PROTOCOLS...",
+            "RESOLVING CALABI-YAU MANIFOLDS...",
+            "CALCULATING AMPLITUHEDRON VOLUME...",
+            "ACCESS GRANTED. WAKE UP."
+        ];
         
-        document.addEventListener('mousemove', (e) => {
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-            
-            setTimeout(() => {
-                cursorRing.style.left = e.clientX + 'px';
-                cursorRing.style.top = e.clientY + 'px';
-            }, 75);
+        let lineIndex = 0;
+        let charIndex = 0;
+        
+        function typeWriter() {
+            if (lineIndex < bootLines.length) {
+                if (charIndex < bootLines[lineIndex].length) {
+                    bootText.innerHTML += bootLines[lineIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, Math.random() * 30 + 10);
+                } else {
+                    bootText.innerHTML += '<br><br>';
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeWriter, 200);
+                }
+            } else {
+                setTimeout(() => {
+                    bootScreen.style.opacity = '0';
+                    setTimeout(() => { bootScreen.style.display = 'none'; }, 1000);
+                }, 500);
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            setTimeout(typeWriter, 500);
         });
 
-        // Scroll Reveals
-        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        const interactables = document.querySelectorAll('.cursor-interact, a, button, input, textarea');
+
+        // Global mouse position tracking for WebGL Shader interaction
+        const mouse3D = new THREE.Vector3(0, 0, 0);
+        const planeZ0 = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const raycaster = new THREE.Raycaster();
+        let mouseX = 0; let mouseY = 0; let scrollY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            // DOM Cursor
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            setTimeout(() => {
+                ring.style.left = e.clientX + 'px';
+                ring.style.top = e.clientY + 'px';
+            }, 50);
+
+            // ThreeJS Mouse Coordinates
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                dot.style.transform = 'translate(-50%, -50%) scale(0)';
+                ring.style.width = '50px';
+                ring.style.height = '50px';
+                ring.style.borderColor = '#990000';
+                ring.style.backgroundColor = 'rgba(153,0,0,0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                dot.style.transform = 'translate(-50%, -50%) scale(1)';
+                ring.style.width = '30px';
+                ring.style.height = '30px';
+                ring.style.borderColor = 'rgba(153, 0, 0, 0.5)';
+                ring.style.backgroundColor = 'transparent';
+            });
+        });
+
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // --- Three.js Background: Schrödinger Wave Function Evolution ---
-        const canvas = document.getElementById('bg-canvas');
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+        // =====================================================================
+        // THREE.JS: GPU-ACCELERATED QUANTUM TOPOLOGY (GLSL SHADERS)
+        // =====================================================================
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.012); 
+        scene.fog = new THREE.FogExp2(0x000000, 0.02); 
         
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 32); 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        const mathGroup = new THREE.Group();
+        // 1. THE AMPLITUHDRON (Wireframe Core)
+        const ampGeometry = new THREE.IcosahedronGeometry(4, 2);
+        const ampMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff0000, wireframe: true, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending
+        });
+        const amplituhedron = new THREE.Mesh(ampGeometry, ampMaterial);
+        scene.add(amplituhedron);
 
-        // High-density sphere to act as our quantum field canvas
-        const geometry = new THREE.SphereGeometry(14, 150, 150);
-        
-        // Store original vertices for real-time mathematical displacement
-        const positionAttribute = geometry.attributes.position;
-        const basePositions = [];
-        for (let i = 0; i < positionAttribute.count; i++) {
-            basePositions.push(new THREE.Vector3().fromBufferAttribute(positionAttribute, i));
+        // 2. THE QUANTUM SUPERFLUID (GPU Particles)
+        // We push 250,000 particles directly to the GPU instead of looping in JS
+        const particleCount = 250000; 
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const randoms = new Float32Array(particleCount);
+
+        const R = 3.5;
+        for(let i = 0; i < particleCount; i++) {
+            let t = Math.random() * Math.PI * 2;
+            
+            // Base Trefoil knot math
+            let x0 = R * (Math.sin(t) + 2 * Math.sin(2 * t));
+            let y0 = R * (Math.cos(t) - 2 * Math.cos(2 * t));
+            let z0 = R * (-Math.sin(3 * t));
+
+            // Volumetric dispersion
+            let spread = Math.pow(Math.random(), 3) * 5.0; 
+            let theta = Math.random() * Math.PI * 2;
+            let phi = Math.acos(2 * Math.random() - 1);
+            
+            positions[i*3] = x0 + spread * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = y0 + spread * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = z0 + spread * Math.cos(phi);
+
+            randoms[i] = Math.random(); // Unique identifier for quantum fluctuation
         }
 
-        // Layer 1: The Probability Matrix (Extremely Bright Red Points)
-        const pointMat = new THREE.PointsMaterial({
-            color: 0xff1111, // Piercing bright red
-            size: 0.08,
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+
+        const shaderMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0 },
+                mouse3D: { value: new THREE.Vector3(0, 0, 0) }
+            },
+            vertexShader: `
+                uniform float time;
+                uniform vec3 mouse3D;
+                attribute float aRandom;
+                varying vec3 vColor;
+                
+                void main() {
+                    vec3 pos = position;
+                    
+                    // Quantum Fluctuation (Boiling effect based on time & unique random)
+                    float noise = sin(time * 2.0 + aRandom * 10.0) * 0.3;
+                    pos += normalize(pos) * noise;
+
+                    // Gravity Well Interaction (Mouse Repulsion)
+                    // The closer the particle is to the mouse projection, the harder it gets pushed away
+                    float dist = distance(pos, mouse3D);
+                    float force = max(0.0, 8.0 - dist); // 8.0 is the radius of gravity
+                    pos += normalize(pos - mouse3D) * (force * 0.6);
+                    
+                    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                    // Size attenuation based on depth and randomness
+                    gl_PointSize = (25.0 / -mvPosition.z) * (aRandom + 0.3);
+                    gl_Position = projectionMatrix * mvPosition;
+
+                    // Color assignment based on distance from the mathematical core
+                    float coreDist = length(position) / 10.0;
+                    vec3 coreColor = vec3(1.0, 1.0, 1.0); // Absolute white-hot center
+                    vec3 midColor = vec3(1.0, 0.0, 0.0);  // Brutal Red
+                    vec3 edgeColor = vec3(0.05, 0.0, 0.0); // Dark void
+                    
+                    if (coreDist < 0.15) {
+                        vColor = mix(coreColor, midColor, coreDist / 0.15);
+                    } else {
+                        vColor = mix(midColor, edgeColor, (coreDist - 0.15) / 0.85);
+                    }
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                void main() {
+                    // Create soft circular glowing particles
+                    float dist = length(gl_PointCoord - vec2(0.5));
+                    if (dist > 0.5) discard;
+                    
+                    // Smooth glow curve
+                    float alpha = pow((0.5 - dist) * 2.0, 1.5); 
+                    gl_FragColor = vec4(vColor, alpha * 0.9);
+                }
+            `,
             transparent: true,
-            opacity: 0.9,
-            blending: THREE.AdditiveBlending
-        });
-        const particles = new THREE.Points(geometry, pointMat);
-        mathGroup.add(particles);
-
-        // Layer 2: The Waveframe (Glowing structural grid)
-        const meshMat = new THREE.MeshBasicMaterial({
-            color: 0xff0000,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.15,
-            blending: THREE.AdditiveBlending
-        });
-        const coreMesh = new THREE.Mesh(geometry, meshMat);
-        mathGroup.add(coreMesh);
-
-        scene.add(mathGroup);
-
-        camera.position.z = 45;
-        camera.position.y = 0;
-        camera.lookAt(scene.position);
-
-        // Interaction Variables
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetX = 0;
-        let targetY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-        let scrollY = 0;
-        let isSandevistanActive = false;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - windowHalfX);
-            mouseY = (e.clientY - windowHalfY);
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         });
 
-        window.addEventListener('scroll', () => {
-            scrollY = window.scrollY;
-        });
+        const particleSystem = new THREE.Points(geometry, shaderMaterial);
+        scene.add(particleSystem);
 
-        // Animation Loop
+        const clock = new THREE.Clock();
+
         function animate() {
             requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            
+            // Pass time to the GPU shader
+            shaderMaterial.uniforms.time.value = time;
 
-            const speed = isSandevistanActive ? 0.002 : 0.0004;
-            const time = Date.now() * speed;
+            // Calculate exact 3D position of the mouse on the Z=0 plane
+            raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+            raycaster.ray.intersectPlane(planeZ0, mouse3D);
+            shaderMaterial.uniforms.mouse3D.value.copy(mouse3D);
 
-            // --- Real-time Schrödinger Wave Equation ---
-            // Calculating the probability density of a quantum superposition state
-            for ( let i = 0; i < positionAttribute.count; i ++ ) {
-                const v = basePositions[i];
-                
-                // Normalized coordinate space
-                const nx = v.x / 14; 
-                const ny = v.y / 14; 
-                const nz = v.z / 14;
+            // Rotate the entire system
+            particleSystem.rotation.y = time * 0.1;
+            particleSystem.rotation.z = time * 0.05;
 
-                // Spherical Coordinates (Theta & Phi)
-                const theta = Math.acos(ny);
-                const phi = Math.atan2(nz, nx);
+            // Counter-rotate and pulse the Amplituhedron
+            amplituhedron.rotation.y = -time * 0.15;
+            amplituhedron.rotation.x = time * 0.1;
+            let scale = 1 + Math.sin(time * 3) * 0.05;
+            amplituhedron.scale.set(scale, scale, scale);
 
-                // Complex Spherical Harmonics (Simulating Electron Orbitals)
-                // State 1: 4f orbital interference
-                const state1 = Math.pow(Math.sin(theta), 3) * Math.cos(3 * phi - time * 2);
-                // State 2: 5d orbital interference
-                const state2 = Math.cos(theta) * Math.sin(theta) * Math.cos(2 * phi + time * 1.5);
-                
-                // Absolute probability amplitude (Wave interference)
-                const wave = Math.abs(state1 * 12 + state2 * 10);
-                
-                // Final radial displacement
-                const r = 9 + wave + Math.sin(time * 4 + nx * 5) * 1.5;
-
-                positionAttribute.setXYZ(i, nx * r, ny * r, nz * r);
-            }
-            positionAttribute.needsUpdate = true; // Force WebGL to redraw the new physics
-
-            // Entire quantum cloud slowly rotates in global space
-            mathGroup.rotation.y = time * 0.5;
-            mathGroup.rotation.x = Math.sin(time) * 0.2;
-
-            // Camera Parallax
-            targetX = mouseX * 0.025;
-            targetY = mouseY * 0.025;
+            // Parallax camera movement based on scroll and mouse
+            const targetX = mouseX * 4;
+            const targetY = mouseY * 4 - (scrollY * 0.008);
             
             camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (-targetY - camera.position.y) * 0.05;
-            
-            // Push camera through the quantum field based on scroll depth
-            camera.position.z = 45 - (scrollY * 0.015);
-            
-            camera.lookAt(scene.position);
+            camera.position.y += (targetY - camera.position.y) * 0.05;
+            camera.lookAt(0, -scrollY * 0.003, 0);
+
             renderer.render(scene, camera);
         }
 
@@ -457,47 +616,8 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        window.onload = animate;
-
-        // Sandevistan Logic 
-        const launchBtn = document.getElementById('activate');
-        const sandyOverlay = document.getElementById('sandy-overlay');
-        const deactivateBtn = document.getElementById('deactivate');
-        
-        // Materials to override
-        const materialsToAnimate = [meshMat, pointMat];
-        const originalColors = [0xff0000, 0xff1111];
-        const originalOpacities = [0.15, 0.9];
-
-        launchBtn.addEventListener('click', () => {
-            isSandevistanActive = true;
-            sandyOverlay.classList.add('active');
-            
-            // Force quantum state strictly to Edgerunner Green
-            materialsToAnimate.forEach(mat => {
-                mat.color.setHex(0x00ff9d);
-                mat.opacity = 1.0;
-            });
-            
-            document.body.style.cursor = 'auto'; 
-            cursorDot.style.opacity = '0';
-            cursorRing.style.opacity = '0';
-        });
-
-        deactivateBtn.addEventListener('click', () => {
-            isSandevistanActive = false;
-            sandyOverlay.classList.remove('active');
-            
-            // Restore Donda red palette
-            materialsToAnimate.forEach((mat, index) => {
-                mat.color.setHex(originalColors[index]);
-                mat.opacity = originalOpacities[index];
-            });
-
-            document.body.style.cursor = 'none';
-            cursorDot.style.opacity = '1';
-            cursorRing.style.opacity = '1';
-        });
+        // Loop started on window load inside the boot sequence timeout to save resources
+        animate();
     </script>
 </body>
 </html>
