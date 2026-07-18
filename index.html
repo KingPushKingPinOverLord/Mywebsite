@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE PARADIGM | Unapologetic Genius</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --gold: #d4af37;
+            --blood: #990000;
+            --bg: #030303;
+        }
+
+        body, html {
+            background-color: var(--bg);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor takes over */
+        }
+
+        h1, h2, h3, .display-font {
+            font-family: 'Syne', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* React-style smooth scroll typography */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .reveal-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* The refined 'MADNESS' effect - Elegant & Intense */
+        .madness-text {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .madness-text::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0%;
+            height: 100%;
+            color: var(--blood);
+            -webkit-text-stroke: 0px;
+            overflow: hidden;
+            transition: width 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+            white-space: nowrap;
+        }
+
+        .madness-text:hover {
+            -webkit-text-stroke: 1px transparent;
+            letter-spacing: 0.05em;
+        }
+
+        .madness-text:hover::before {
+            width: 100%;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        /* React-like button hover */
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-premium::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+        .btn-premium:hover::after {
+            transform: translateY(0);
+        }
+        .btn-premium:hover {
+            color: #000;
+        }
+
+        /* Three.js Canvas */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#990000] selection:text-white">
+
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-dot" id="cursor-dot"></div>
+
+    <!-- Tyger Tyger, burning bright. In the forests of the night. -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <nav class="fixed w-full z-50 p-8 flex justify-between items-center mix-blend-difference text-white">
+        <div class="text-xl font-bold tracking-widest display-font">EGO.</div>
+        <div class="text-sm font-mono tracking-widest">v2.0 // NO APOLOGIES</div>
+    </nav>
+
+    <main class="relative z-10 w-full">
+        <!-- Hero Section -->
+        <section class="h-screen flex flex-col justify-center px-8 md:px-24">
+            <div class="max-w-7xl">
+                <p class="font-mono text-gray-500 mb-6 tracking-[0.2em] reveal-up">THE METHOD IS SIMPLE.</p>
+                <h1 class="text-6xl md:text-[8rem] font-extrabold leading-[0.85] tracking-tight mb-8">
+                    <span class="reveal-up block">MY NAME IS EGO.</span>
+                    <span class="reveal-up block madness-text" data-text="I'M TAKING YOUR SPOT.">I'M TAKING YOUR SPOT.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 max-w-2xl font-light leading-relaxed reveal-up delay-200">
+                    I am a high school physicist. And I am going to steal your lab time at MIT by becoming the most undeniable engineer in the room. I don't compete. I execute.
+                </p>
+            </div>
+            
+            <div class="absolute bottom-12 right-12 text-right reveal-up delay-300 hidden md:block">
+                <p class="text-sm font-mono text-gray-500">CURRENT MOOD</p>
+                <p class="text-lg font-bold text-[var(--gold)]">MBDTF ON REPEAT</p>
+            </div>
+        </section>
+
+        <!-- The Manifesto / Projects -->
+        <section class="py-32 px-8 md:px-24 bg-gradient-to-b from-transparent to-[#050505]">
+            <div class="max-w-7xl mx-auto">
+                
+                <h2 class="text-4xl md:text-6xl font-bold mb-24 reveal-up border-b border-gray-800 pb-8 display-font flex justify-between items-end">
+                    <span>THE PORTFOLIO</span>
+                    <span class="text-sm font-mono text-[var(--gold)] tracking-widest font-normal">BUILT DIFFERENT.</span>
+                </h2>
+
+                <div class="space-y-32">
+                    
+                    <!-- Project: Rocket -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-5 order-2 lg:order-1 reveal-up">
+                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-[var(--gold)] transition-colors">PROJECT: APOLLO'S BASTARD</h3>
+                            <div class="flex gap-4 mb-6">
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">Thermodynamics</span>
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-[var(--gold)]">Solid Propellant</span>
+                            </div>
+                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                                Target: The Moon. Because David couldn't take Lucy himself, and Maine didn't make it. I'm building a solid-propellant rocket motor in my backyard. No Sandevistan required, just raw specific impulse (Isp) and titanium nozzle expansion ratios. This is my orbital demand letter to Massachusetts.
+                            </p>
+                        </div>
+                        <div class="lg:col-span-7 order-1 lg:order-2 reveal-up relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-[var(--gold)] to-[var(--blood)] opacity-20 blur-xl group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                            <img src="https://placehold.co/1200x800/111/fff?text=Rocket+Schematics\n[CLASSIFIED]" alt="Rocket Project" class="relative w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700 rounded-lg">
+                        </div>
+                    </div>
+
+                    <!-- Project: Luka & Kinematics -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-7 reveal-up relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20 blur-xl group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                            <img src="https://placehold.co/1200x800/111/fff?text=Kinematic+Data\nLuka+Doncic" alt="Luka Analytics" class="relative w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700 rounded-lg">
+                        </div>
+                        <div class="lg:col-span-5 reveal-up">
+                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-blue-500 transition-colors">SOLVING LUKA DONČIĆ</h3>
+                            <div class="flex gap-4 mb-6">
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">OpenCV</span>
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-blue-400">Kinematics</span>
+                            </div>
+                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                                There's no such thing as psychics, and there's no such thing as "basketball magic." I don't guess, I observe. I wrote an OpenCV script to track 77's center of mass during his step-back. I proved his deceleration exploits human reaction time limits using Newton's First Law. It's not a sixth sense; it's physics.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Project: MBDTF & Math -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-5 order-2 lg:order-1 reveal-up">
+                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-[var(--blood)] transition-colors">THE FREQUENCY OF GENIUS</h3>
+                            <div class="flex gap-4 mb-6">
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">Euler's Formula</span>
+                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-[var(--blood)]">Fourier Transforms</span>
+                            </div>
+                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                                Euler is the undisputed GOAT of mathematics. Kanye is the GOAT of music. I used Fast Fourier Transforms (FFT) to analyze the exact frequencies of the piano notes in "Runaway". Perfect math yields perfect audio. 
+                            </p>
+                            <!-- Apple Music Embed -->
+                            <div class="rounded-xl overflow-hidden shadow-2xl shadow-red-900/20 border border-gray-800">
+                                <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/my-beautiful-dark-twisted-fantasy-deluxe-edition-explicit/1440621197"></iframe>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-7 order-1 lg:order-2 reveal-up relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-[var(--blood)] to-black opacity-30 blur-xl group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
+                            <div class="relative w-full aspect-video bg-black rounded-lg border border-gray-800 flex items-center justify-center overflow-hidden">
+                                <div class="text-center">
+                                    <div class="text-6xl font-serif italic mb-4 text-[var(--gold)]">e<sup>iπ</sup> + 1 = 0</div>
+                                    <p class="font-mono text-gray-600 text-sm tracking-widest uppercase">The Equation of God</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact / The Ultimatum -->
+        <section class="py-32 px-8 md:px-24 bg-[#030303]">
+            <div class="max-w-4xl mx-auto text-center reveal-up">
+                <h2 class="text-5xl md:text-7xl font-bold mb-6 display-font">THE CLINIC</h2>
+                <p class="text-xl text-gray-400 mb-12 font-light">
+                    Everybody lies. Math doesn't. If you want someone to hold your hand, find another candidate. If you want someone to rewrite the rules of aerospace, transmit a message to my terminal.
+                </p>
+
+                <form class="space-y-8 text-left">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <input type="text" placeholder="NAME [STRING]" class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none placeholder:text-gray-600">
+                        </div>
+                        <div>
+                            <input type="text" placeholder="DIAGNOSIS (REQUIRED)" class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none placeholder:text-gray-600">
+                        </div>
+                    </div>
+                    <div>
+                        <textarea rows="4" placeholder="STATE YOUR BUSINESS." class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none resize-none placeholder:text-gray-600"></textarea>
+                    </div>
+                    
+                    <button type="button" class="w-full border border-gray-600 text-white text-xl display-font py-6 hover:border-transparent transition-colors duration-300 relative btn-premium group overflow-hidden">
+                        <span class="relative z-10 transition-colors group-hover:text-black tracking-widest">TRANSMIT TO MY TERMINAL</span>
+                        <div class="absolute inset-0 bg-[var(--blood)] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0 flex items-center justify-center">
+                            <span class="text-white font-mono text-sm tracking-[0.3em] font-bold">SANDEVISTAN: ACTIVATED</span>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <footer class="py-8 text-center border-t border-gray-900 bg-black">
+            <p class="font-mono text-xs text-gray-600 tracking-widest">
+                ARCHITECTED BY EGO. DESTINATION: MASSACHUSETTS.
+            </p>
+        </footer>
+    </main>
+
+    <script>
+        // --- React-like Scroll Reveal Observer ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-up').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // --- Custom Cursor Logic ---
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Immediate dot follow
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+        });
+
+        // Smooth follower animation for the outer ring
+        function animateCursor() {
+            let dx = mouseX - cursorX;
+            let dy = mouseY - cursorY;
+            
+            cursorX += dx * 0.15;
+            cursorY += dy * 0.15;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor hover effects on links/buttons
+        const interactables = document.querySelectorAll('a, button, input, textarea, .madness-text');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.width = '50px';
+                cursor.style.height = '50px';
+                cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                cursor.style.borderColor = 'transparent';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.backgroundColor = 'transparent';
+                cursor.style.borderColor = 'var(--gold)';
+            });
+        });
+
+        // --- Premium Three.js Particle Matrix (The "React Site" feel) ---
+        window.onload = function() {
+            const canvas = document.getElementById('webgl-canvas');
+            const scene = new THREE.Scene();
+            // Deep fog to hide the edges gracefully
+            scene.fog = new THREE.FogExp2(0x030303, 0.002);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+            camera.position.set(0, 200, 400);
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // optimize performance
+
+            // Cinematic Wireframe Terrain (The mathematical/blueprint aesthetic)
+            const geometry = new THREE.PlaneGeometry(2000, 2000, 60, 60);
+            geometry.rotateX(-Math.PI / 2);
+
+            // Add variance to the vertices for a terrain look
+            const vertices = geometry.attributes.position.array;
+            for (let i = 0; i < vertices.length; i += 3) {
+                vertices[i + 1] = Math.random() * 40 - 20; 
+            }
+
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x333333, 
+                wireframe: true,
+                transparent: true,
+                opacity: 0.25
+            });
+
+            const plane = new THREE.Mesh(geometry, material);
+            scene.add(plane);
+
+            // Floating Mathematical Nodes (The "Genius" aesthetic)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 200;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i+=3) {
+                posArray[i] = (Math.random() - 0.5) * 1500; // x
+                posArray[i+1] = Math.random() * 500;        // y
+                posArray[i+2] = (Math.random() - 0.5) * 1500; // z
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 3,
+                color: 0xd4af37, // Gold nodes
+                transparent: true,
+                opacity: 0.8
+            });
+            const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particleMesh);
+
+            // Variables for mouse parallax interaction
+            let targetX = 0;
+            let targetY = 0;
+            let scrollY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                targetX = (event.clientX - window.innerWidth / 2) * 0.1;
+                targetY = (event.clientY - window.innerHeight / 2) * 0.1;
+            });
+
+            document.addEventListener('scroll', () => {
+                scrollY = window.scrollY;
+            });
+
+            const clock = new THREE.Clock();
+
+            function animateWebGL() {
+                requestAnimationFrame(animateWebGL);
+                
+                const elapsedTime = clock.getElapsedTime();
+
+                // Animate Terrain Waves (Smooth mathematical sine waves)
+                const verts = plane.geometry.attributes.position.array;
+                for (let i = 0; i < verts.length; i += 3) {
+                    const x = verts[i];
+                    const z = verts[i + 2];
+                    verts[i + 1] = Math.sin(x * 0.005 + elapsedTime) * 20 + Math.cos(z * 0.005 + elapsedTime) * 20;
+                }
+                plane.geometry.attributes.position.needsUpdate = true;
+                
+                // Slow rotation of floating nodes
+                particleMesh.rotation.y = elapsedTime * 0.02;
+
+                // Mouse parallax effect
+                camera.position.x += (targetX - camera.position.x) * 0.05;
+                camera.position.y += (200 - targetY - camera.position.y) * 0.05;
+                
+                // Scroll parallax effect (moves the camera through the digital ocean)
+                camera.position.z = 400 - (scrollY * 0.1);
+                
+                camera.lookAt(0, 0, 0);
+
+                renderer.render(scene, camera);
+            }
+            animateWebGL();
+
+            // Handle Resize gracefully
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+    </script>
+</body>
+</html>
