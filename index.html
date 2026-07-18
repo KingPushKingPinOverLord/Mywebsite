@@ -3,469 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE PARADIGM | Unapologetic Genius</title>
+    <title>EGO // THE MANIFESTO</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600&display=swap');
-
-        :root {
-            --gold: #d4af37;
-            --blood: #990000;
-            --bg: #030303;
-        }
-
-        body, html {
-            background-color: var(--bg);
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            cursor: none; /* Custom cursor takes over */
-        }
-
-        h1, h2, h3, .display-font {
-            font-family: 'Syne', sans-serif;
-            text-transform: uppercase;
-        }
-
-        /* React-style smooth scroll typography */
-        .reveal-up {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        :root { 
+            --red: #5a0000;
+            --blood: #8B0000; /* Deep, dark blood red. Pure contrast. */
+            --sandevistan-green: #00ff9d;
+            --bg-color: #000000; /* Pure Pitch Black */
         }
         
-        .reveal-up.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+        body { 
+            background: var(--bg-color); 
+            color: #d1d1d1; 
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            cursor: none; 
         }
 
-        /* The refined 'MADNESS' effect - Elegant & Intense */
-        .madness-text {
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
-            position: relative;
-            transition: all 0.5s ease;
-        }
+        /* Typography Stack */
+        .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+        .font-mono { font-family: 'Space Mono', monospace; }
 
-        .madness-text::before {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0%;
-            height: 100%;
-            color: var(--blood);
-            -webkit-text-stroke: 0px;
-            overflow: hidden;
-            transition: width 0.7s cubic-bezier(0.77, 0, 0.175, 1);
-            white-space: nowrap;
+        /* Custom Cursor - Thinner, sharper, blood red on hover */
+        .cursor-dot {
+            width: 4px; height: 4px; background: white; border-radius: 0;
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%); transition: background-color 0.3s;
         }
-
-        .madness-text:hover {
-            -webkit-text-stroke: 1px transparent;
-            letter-spacing: 0.05em;
+        .cursor-ring {
+            width: 30px; height: 30px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0;
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%); transition: transform 0.2s ease-out, border-color 0.3s;
         }
-
-        .madness-text:hover::before {
-            width: 100%;
+        
+        /* Hover States for Cursor */
+        a:hover ~ .cursor-dot, button:hover ~ .cursor-dot, .hover-target:hover ~ .cursor-dot { 
+            background: var(--blood); transform: translate(-50%, -50%) scale(2); 
         }
-
-        /* Custom Cursor */
-        .custom-cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 20px;
-            height: 20px;
-            border: 1px solid var(--gold);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 9999;
-            transition: width 0.3s, height 0.3s, background-color 0.3s;
-            mix-blend-mode: difference;
-        }
-
-        .custom-cursor-dot {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 4px;
-            background-color: var(--gold);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 10000;
-        }
-
-        /* React-like button hover */
-        .btn-premium {
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-premium::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #fff;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: -1;
-        }
-        .btn-premium:hover::after {
-            transform: translateY(0);
-        }
-        .btn-premium:hover {
-            color: #000;
+        a:hover ~ .cursor-ring, button:hover ~ .cursor-ring, .hover-target:hover ~ .cursor-ring { 
+            transform: translate(-50%, -50%) rotate(45deg) scale(1.5); border-color: var(--blood); background: transparent;
         }
 
         /* Three.js Canvas */
-        #webgl-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            pointer-events: none;
+        #bg-canvas { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            z-index: -1; opacity: 0.6; pointer-events: none; 
         }
 
-        ::-webkit-scrollbar { width: 0px; }
+        /* Slow, deliberate reveals */
+        .reveal { 
+            opacity: 0; transform: translateY(30px); 
+            transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .reveal-delay-1 { transition-delay: 0.2s; }
+
+        /* Editorial Project Cards - Brutalist */
+        .project-card { 
+            background: transparent;
+            border-top: 1px solid rgba(139, 0, 0, 0.3); /* Dark red borders */
+            transition: all 0.5s ease;
+            position: relative;
+            padding: 3rem 0;
+        }
+        .project-card::before {
+            content: ''; position: absolute; top: -1px; left: 0; width: 0%; height: 1px;
+            background: var(--blood);
+            transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .project-card:hover { 
+            border-color: rgba(139, 0, 0, 0.1);
+        }
+        .project-card:hover::before { width: 100%; }
+        
+        .project-card:hover h3 { color: white; letter-spacing: 0.05em; }
+        h3 { transition: all 0.5s ease; }
+
+        /* Sandevistan Modal */
+        #sandy-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95);
+            border: 1px solid var(--sandevistan-green); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        #sandy-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        /* AURA Text - Pure stark contrast */
+        .aura-text {
+            color: var(--blood);
+            transition: color 0.3s ease;
+        }
+        
+        .hover-bleed:hover {
+            color: var(--blood);
+        }
+
+        /* Hide scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #111; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--blood); }
     </style>
 </head>
-<body class="antialiased selection:bg-[#990000] selection:text-white">
+<body class="selection:bg-red-900 selection:text-white">
 
-    <div class="custom-cursor" id="cursor"></div>
-    <div class="custom-cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
 
-    <!-- Tyger Tyger, burning bright. In the forests of the night. -->
-    <canvas id="webgl-canvas"></canvas>
+    <!-- Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
 
-    <nav class="fixed w-full z-50 p-8 flex justify-between items-center mix-blend-difference text-white">
-        <div class="text-xl font-bold tracking-widest display-font">EGO.</div>
-        <div class="text-sm font-mono tracking-widest">v2.0 // NO APOLOGIES</div>
-    </nav>
-
-    <main class="relative z-10 w-full">
-        <!-- Hero Section -->
-        <section class="h-screen flex flex-col justify-center px-8 md:px-24">
-            <div class="max-w-7xl">
-                <p class="font-mono text-gray-500 mb-6 tracking-[0.2em] reveal-up">THE METHOD IS SIMPLE.</p>
-                <h1 class="text-6xl md:text-[8rem] font-extrabold leading-[0.85] tracking-tight mb-8">
-                    <span class="reveal-up block">MY NAME IS EGO.</span>
-                    <span class="reveal-up block madness-text" data-text="I'M TAKING YOUR SPOT.">I'M TAKING YOUR SPOT.</span>
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-400 max-w-2xl font-light leading-relaxed reveal-up delay-200">
-                    I am a high school physicist. And I am going to steal your lab time at MIT by becoming the most undeniable engineer in the room. I don't compete. I execute.
-                </p>
-            </div>
+    <header class="min-h-screen flex flex-col justify-center px-6 md:px-24 relative pt-20 pb-10">
+        <div class="absolute top-8 left-6 md:left-24 flex gap-6 text-xs tracking-widest font-mono text-blood uppercase">
+            <span>// CLASS_OF_202X</span>
+        </div>
+        
+        <div class="reveal max-w-6xl">
+            <h1 class="font-bebas text-[20vw] md:text-[14vw] leading-[0.75] tracking-normal mb-6 text-white hover-bleed cursor-default transition-colors duration-700">
+                EGO.
+            </h1>
+            <h2 class="font-mono text-gray-500 tracking-[0.3em] mb-12 text-xs md:text-sm uppercase border-l-2 border-blood pl-4">
+                Grade 11. State Athlete. Applied Physics.
+            </h2>
+            <h3 class="font-bebas text-5xl md:text-7xl mb-8 text-gray-500 hover-target transition-all duration-500">
+                TARGET: <span class="text-white">M.I.T.</span>
+            </h3>
             
-            <div class="absolute bottom-12 right-12 text-right reveal-up delay-300 hidden md:block">
-                <p class="text-sm font-mono text-gray-500">CURRENT MOOD</p>
-                <p class="text-lg font-bold text-[var(--gold)]">MBDTF ON REPEAT</p>
+            <p class="text-lg md:text-2xl max-w-3xl font-light text-gray-400 leading-relaxed">
+                My name is Ego. I'm a high school junior. I'm building a suborbital rocket in my garage, simulating orbital mechanics from scratch, and coming for lab time in Massachusetts.
+            </p>
+
+            <div class="flex flex-wrap gap-8 text-xs font-mono mt-16 border-t border-blood/30 pt-6 text-gray-500 uppercase tracking-widest">
+                <span class="hover:text-blood transition-colors cursor-default">AEROSPACE</span>
+                <span>•</span>
+                <span class="hover:text-blood transition-colors cursor-default">THERMODYNAMICS</span>
+                <span>•</span>
+                <span class="hover:text-blood transition-colors cursor-default">TENSOR CALCULUS</span>
             </div>
-        </section>
+        </div>
+    </header>
 
-        <!-- The Manifesto / Projects -->
-        <section class="py-32 px-8 md:px-24 bg-gradient-to-b from-transparent to-[#050505]">
-            <div class="max-w-7xl mx-auto">
+    <section class="py-32 px-6 md:px-24 relative border-t border-blood/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-12 gap-20 items-start">
                 
-                <h2 class="text-4xl md:text-6xl font-bold mb-24 reveal-up border-b border-gray-800 pb-8 display-font flex justify-between items-end">
-                    <span>THE PORTFOLIO</span>
-                    <span class="text-sm font-mono text-[var(--gold)] tracking-widest font-normal">BUILT DIFFERENT.</span>
-                </h2>
+                <!-- The Athlete / The Scientist -->
+                <div class="lg:col-span-7 reveal">
+                    <h2 class="font-bebas text-5xl md:text-7xl mb-12 text-white">THE <span class="aura-text">BLUEPRINT</span></h2>
+                    <div class="space-y-12 text-base md:text-lg text-gray-400 font-light leading-relaxed">
+                        <p class="font-bebas text-4xl md:text-5xl text-white tracking-wide leading-tight border-l-4 border-blood pl-6 py-2">
+                            "I DO NOT COMPETE WITH MY PEERS. <br><span class="aura-text">I OBSOLETE THEM.</span>"
+                        </p>
+                        <p>
+                            Most people look at a basketball game and see sport. I see a chaotic system of parabolic trajectories, kinetic energy transfer, and biomechanical leverage. 
+                            <span class="text-white font-semibold">I play basketball for the State</span> because I understand the physics of the court better than the opposition understands the game. 
+                        </p>
+                        <p class="font-mono text-xs text-blood uppercase tracking-widest">
+                            // I don't guess. I observe.
+                        </p>
+                        <p>
+                            The same applies to my academic life. I don't study physics to pass a test. I study it to manipulate reality. Whether it's mapping gravitational lensing or building engines from raw materials, my foundation is entirely mathematical.
+                        </p>
+                    </div>
+                </div>
 
-                <div class="space-y-32">
-                    
-                    <!-- Project: Rocket -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-5 order-2 lg:order-1 reveal-up">
-                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-[var(--gold)] transition-colors">PROJECT: APOLLO'S BASTARD</h3>
-                            <div class="flex gap-4 mb-6">
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">Thermodynamics</span>
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-[var(--gold)]">Solid Propellant</span>
-                            </div>
-                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                                Target: The Moon. Because David couldn't take Lucy himself, and Maine didn't make it. I'm building a solid-propellant rocket motor in my backyard. No Sandevistan required, just raw specific impulse (Isp) and titanium nozzle expansion ratios. This is my orbital demand letter to Massachusetts.
-                            </p>
-                        </div>
-                        <div class="lg:col-span-7 order-1 lg:order-2 reveal-up relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-[var(--gold)] to-[var(--blood)] opacity-20 blur-xl group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                            <img src="https://placehold.co/1200x800/111/fff?text=Rocket+Schematics\n[CLASSIFIED]" alt="Rocket Project" class="relative w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700 rounded-lg">
+                <!-- The Kanye Principle / MBDTF -->
+                <div class="lg:col-span-5 reveal reveal-delay-1 flex flex-col gap-8 pt-4">
+                    <div>
+                        <h3 class="font-bebas text-3xl mb-4 text-white tracking-widest">THE KANYE PRINCIPLE</h3>
+                        <p class="text-gray-500 mb-8 text-sm leading-relaxed">
+                            A study in maximalism and perfectionism. If Kanye can restructure the entire sonic landscape of a generation with one album, I can restructure how we approach aerospace engineering at home. The application is a performance. The rocket is the piece. MIT is just the venue.
+                        </p>
+                        <!-- Apple Music Embed - Styled darkly -->
+                        <div class="grayscale hover:grayscale-0 transition-all duration-700 opacity-70 hover:opacity-100 border border-blood/20">
+                            <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="152" style="width:100%;max-width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/my-beautiful-dark-twisted-fantasy-deluxe-edition-explicit/1440621197"></iframe>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Project: Luka & Kinematics -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-7 reveal-up relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 opacity-20 blur-xl group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                            <img src="https://placehold.co/1200x800/111/fff?text=Kinematic+Data\nLuka+Doncic" alt="Luka Analytics" class="relative w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700 rounded-lg">
-                        </div>
-                        <div class="lg:col-span-5 reveal-up">
-                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-blue-500 transition-colors">SOLVING LUKA DONČIĆ</h3>
-                            <div class="flex gap-4 mb-6">
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">OpenCV</span>
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-blue-400">Kinematics</span>
-                            </div>
-                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                                There's no such thing as psychics, and there's no such thing as "basketball magic." I don't guess, I observe. I wrote an OpenCV script to track 77's center of mass during his step-back. I proved his deceleration exploits human reaction time limits using Newton's First Law. It's not a sixth sense; it's physics.
-                            </p>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    </section>
 
-                    <!-- Project: MBDTF & Math -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div class="lg:col-span-5 order-2 lg:order-1 reveal-up">
-                            <h3 class="text-3xl md:text-5xl font-bold mb-6 display-font text-white hover:text-[var(--blood)] transition-colors">THE FREQUENCY OF GENIUS</h3>
-                            <div class="flex gap-4 mb-6">
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-gray-400">Euler's Formula</span>
-                                <span class="border border-gray-700 px-4 py-1 rounded-full text-xs font-mono uppercase text-[var(--blood)]">Fourier Transforms</span>
-                            </div>
-                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                                Euler is the undisputed GOAT of mathematics. Kanye is the GOAT of music. I used Fast Fourier Transforms (FFT) to analyze the exact frequencies of the piano notes in "Runaway". Perfect math yields perfect audio. 
-                            </p>
-                            <!-- Apple Music Embed -->
-                            <div class="rounded-xl overflow-hidden shadow-2xl shadow-red-900/20 border border-gray-800">
-                                <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/my-beautiful-dark-twisted-fantasy-deluxe-edition-explicit/1440621197"></iframe>
-                            </div>
-                        </div>
-                        <div class="lg:col-span-7 order-1 lg:order-2 reveal-up relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-[var(--blood)] to-black opacity-30 blur-xl group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
-                            <div class="relative w-full aspect-video bg-black rounded-lg border border-gray-800 flex items-center justify-center overflow-hidden">
-                                <div class="text-center">
-                                    <div class="text-6xl font-serif italic mb-4 text-[var(--gold)]">e<sup>iπ</sup> + 1 = 0</div>
-                                    <p class="font-mono text-gray-600 text-sm tracking-widest uppercase">The Equation of God</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+    <section class="py-32 px-6 md:px-24 border-t border-blood/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 reveal">
+                <div>
+                    <h2 class="font-bebas text-6xl md:text-8xl leading-none text-white cursor-default hover-bleed transition-colors">THE_ARSENAL</h2>
+                    <p class="font-mono text-blood mt-6 uppercase tracking-[0.2em] text-xs font-bold">Not Lupus. Just Math.</p>
                 </div>
             </div>
-        </section>
-
-        <!-- Contact / The Ultimatum -->
-        <section class="py-32 px-8 md:px-24 bg-[#030303]">
-            <div class="max-w-4xl mx-auto text-center reveal-up">
-                <h2 class="text-5xl md:text-7xl font-bold mb-6 display-font">THE CLINIC</h2>
-                <p class="text-xl text-gray-400 mb-12 font-light">
-                    Everybody lies. Math doesn't. If you want someone to hold your hand, find another candidate. If you want someone to rewrite the rules of aerospace, transmit a message to my terminal.
-                </p>
-
-                <form class="space-y-8 text-left">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <input type="text" placeholder="NAME [STRING]" class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none placeholder:text-gray-600">
-                        </div>
-                        <div>
-                            <input type="text" placeholder="DIAGNOSIS (REQUIRED)" class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none placeholder:text-gray-600">
-                        </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                
+                <!-- Project 1: Rockets -->
+                <div class="project-card reveal hover-target grid md:grid-cols-12 gap-8 items-start">
+                    <div class="md:col-span-3">
+                        <span class="font-mono text-xs text-blood uppercase tracking-widest">01 // HARDWARE</span>
                     </div>
-                    <div>
-                        <textarea rows="4" placeholder="STATE YOUR BUSINESS." class="w-full bg-transparent border-b border-gray-700 text-white p-4 focus:outline-none focus:border-[var(--gold)] font-mono transition-colors rounded-none resize-none placeholder:text-gray-600"></textarea>
+                    <div class="md:col-span-9">
+                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">APOLLO'S BASTARD</h3>
+                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
+                            DIY Aerospace. Calculating thrust-to-weight ratios that make established engineers sweat. Designing and machining the solid-propellant hardware required to push past the Karman line entirely from my backyard. 
+                        </p>
+                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
+                            // David couldn't take Lucy to the moon. I'm building the hardware to do it myself.
+                        </p>
                     </div>
-                    
-                    <button type="button" class="w-full border border-gray-600 text-white text-xl display-font py-6 hover:border-transparent transition-colors duration-300 relative btn-premium group overflow-hidden">
-                        <span class="relative z-10 transition-colors group-hover:text-black tracking-widest">TRANSMIT TO MY TERMINAL</span>
-                        <div class="absolute inset-0 bg-[var(--blood)] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0 flex items-center justify-center">
-                            <span class="text-white font-mono text-sm tracking-[0.3em] font-bold">SANDEVISTAN: ACTIVATED</span>
-                        </div>
-                    </button>
-                </form>
+                </div>
+
+                <!-- Project 2: Pulsejet -->
+                <div class="project-card reveal reveal-delay-1 hover-target grid md:grid-cols-12 gap-8 items-start">
+                    <div class="md:col-span-3">
+                        <span class="font-mono text-xs text-blood uppercase tracking-widest">02 // THERMODYNAMICS</span>
+                    </div>
+                    <div class="md:col-span-9">
+                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">RESONANCE_01</h3>
+                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
+                            A fully functional valveless pulsejet engine. Harnessing acoustic resonance, fluid dynamics, and raw combustion. Engineered the combustion chamber geometry to maximize acoustic wave reflection, creating a self-sustaining detonation cycle.
+                        </p>
+                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
+                            // Efficiency is a myth. Thrust is reality.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project 3: Black Hole Sim -->
+                <div class="project-card reveal hover-target grid md:grid-cols-12 gap-8 items-start">
+                    <div class="md:col-span-3">
+                        <span class="font-mono text-xs text-blood uppercase tracking-widest">03 // ASTROPHYSICS</span>
+                    </div>
+                    <div class="md:col-span-9">
+                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">ACCRETION DISK_V2.0</h3>
+                        <p class="text-gray-400 mb-6 font-light text-lg max-w-3xl leading-relaxed">
+                            A real-time, volumetric Black Hole visualizer built entirely from scratch in C++ and OpenGL. By numerically integrating the geodesic equations using a 4th-order Runge-Kutta (RK4) method, I simulated the exact photon paths bent by extreme gravity. The engine natively calculates Doppler beaming, gravitational redshift, and raymarches the Schwarzschild metric.
+                        </p>
+                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
+                            // No external physics libraries. Just raw tensor calculus.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project 4: Meteor Telescope -->
+                <div class="project-card reveal reveal-delay-1 hover-target grid md:grid-cols-12 gap-8 items-start">
+                    <div class="md:col-span-3">
+                        <span class="font-mono text-xs text-blood uppercase tracking-widest">04 // OPTICS</span>
+                    </div>
+                    <div class="md:col-span-9">
+                        <h3 class="font-bebas text-5xl mb-6 text-gray-300">DEAD SPACE TRACKER</h3>
+                        <p class="text-gray-400 mb-8 font-light text-lg max-w-3xl leading-relaxed">
+                            Custom-built meteor telescope. Engineered the optics and wrote the tracking algorithms to map high-velocity orbital debris and celestial bodies against the night sky, logging trajectory data automatically.
+                        </p>
+                        <p class="text-xs font-mono text-gray-600 uppercase tracking-widest">
+                            // The sky isn't a limit. It's a coordinate system.
+                        </p>
+                    </div>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </section>
 
-        <footer class="py-8 text-center border-t border-gray-900 bg-black">
-            <p class="font-mono text-xs text-gray-600 tracking-widest">
-                ARCHITECTED BY EGO. DESTINATION: MASSACHUSETTS.
-            </p>
-        </footer>
-    </main>
+    <footer class="h-[70vh] flex flex-col items-center justify-center relative overflow-hidden group border-t border-blood/30 bg-black">
+        <p class="font-mono text-gray-600 mb-8 tracking-[0.3em] text-sm z-10 text-center px-4">
+            INITIATE LAUNCH SEQUENCE
+        </p>
+        
+        <button id="activate" class="font-bebas text-7xl md:text-[10vw] text-white hover:text-blood transition-all duration-300 z-10 leading-none hover-target">
+            OVERRIDE
+        </button>
+        
+        <p class="font-mono text-gray-600 mt-12 text-xs z-10 max-w-md text-center">
+            Admissions officers: The application is submitted. The rest is physics.
+        </p>
+    </footer>
 
+    <!-- Sandevistan Modal -->
+    <div id="sandy-overlay">
+        <div class="scanline"></div>
+        <h1 class="font-bebas text-7xl md:text-[10vw] text-[var(--sandevistan-green)] text-center leading-none mb-2 tracking-widest" style="text-shadow: 0 0 30px var(--sandevistan-green);">
+            SANDEVISTAN<br>ACTIVE
+        </h1>
+        <p class="font-mono text-white text-lg md:text-xl mt-6 tracking-[0.2em] uppercase bg-black/50 px-4 py-2 border border-[var(--sandevistan-green)]">
+            Synaptic Accelerator at 100%
+        </p>
+        <button id="deactivate" class="mt-16 border border-[var(--sandevistan-green)] text-[var(--sandevistan-green)] px-10 py-4 font-mono text-sm hover:bg-[var(--sandevistan-green)] hover:text-black transition-all hover-target uppercase tracking-widest">
+            Disengage
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // --- React-like Scroll Reveal Observer ---
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.15
-        };
+        // Custom Cursor Logic
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorRing = document.querySelector('.cursor-ring');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorRing.style.left = e.clientX + 'px';
+                cursorRing.style.top = e.clientY + 'px';
+            }, 75);
+        });
 
-        const observer = new IntersectionObserver((entries) => {
+        // Scroll Reveals
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
+                    entry.target.classList.add('active');
                 }
             });
         }, observerOptions);
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        document.querySelectorAll('.reveal-up').forEach((el) => {
-            observer.observe(el);
+        // --- Three.js Background: Schrödinger Wave Function Evolution ---
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.012); 
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const mathGroup = new THREE.Group();
+
+        // High-density sphere to act as our quantum field canvas
+        const geometry = new THREE.SphereGeometry(14, 150, 150);
+        
+        // Store original vertices for real-time mathematical displacement
+        const positionAttribute = geometry.attributes.position;
+        const basePositions = [];
+        for (let i = 0; i < positionAttribute.count; i++) {
+            basePositions.push(new THREE.Vector3().fromBufferAttribute(positionAttribute, i));
+        }
+
+        // Layer 1: The Probability Matrix (Extremely Bright Red Points)
+        const pointMat = new THREE.PointsMaterial({
+            color: 0xff1111, // Piercing bright red
+            size: 0.08,
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending
         });
+        const particles = new THREE.Points(geometry, pointMat);
+        mathGroup.add(particles);
 
-        // --- Custom Cursor Logic ---
-        const cursor = document.getElementById('cursor');
-        const cursorDot = document.getElementById('cursor-dot');
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
+        // Layer 2: The Waveframe (Glowing structural grid)
+        const meshMat = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending
+        });
+        const coreMesh = new THREE.Mesh(geometry, meshMat);
+        mathGroup.add(coreMesh);
+
+        scene.add(mathGroup);
+
+        camera.position.z = 45;
+        camera.position.y = 0;
+        camera.lookAt(scene.position);
+
+        // Interaction Variables
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+        let scrollY = 0;
+        let isSandevistanActive = false;
 
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Immediate dot follow
-            cursorDot.style.left = mouseX + 'px';
-            cursorDot.style.top = mouseY + 'px';
+            mouseX = (e.clientX - windowHalfX);
+            mouseY = (e.clientY - windowHalfY);
         });
 
-        // Smooth follower animation for the outer ring
-        function animateCursor() {
-            let dx = mouseX - cursorX;
-            let dy = mouseY - cursorY;
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const speed = isSandevistanActive ? 0.002 : 0.0004;
+            const time = Date.now() * speed;
+
+            // --- Real-time Schrödinger Wave Equation ---
+            // Calculating the probability density of a quantum superposition state
+            for ( let i = 0; i < positionAttribute.count; i ++ ) {
+                const v = basePositions[i];
+                
+                // Normalized coordinate space
+                const nx = v.x / 14; 
+                const ny = v.y / 14; 
+                const nz = v.z / 14;
+
+                // Spherical Coordinates (Theta & Phi)
+                const theta = Math.acos(ny);
+                const phi = Math.atan2(nz, nx);
+
+                // Complex Spherical Harmonics (Simulating Electron Orbitals)
+                // State 1: 4f orbital interference
+                const state1 = Math.pow(Math.sin(theta), 3) * Math.cos(3 * phi - time * 2);
+                // State 2: 5d orbital interference
+                const state2 = Math.cos(theta) * Math.sin(theta) * Math.cos(2 * phi + time * 1.5);
+                
+                // Absolute probability amplitude (Wave interference)
+                const wave = Math.abs(state1 * 12 + state2 * 10);
+                
+                // Final radial displacement
+                const r = 9 + wave + Math.sin(time * 4 + nx * 5) * 1.5;
+
+                positionAttribute.setXYZ(i, nx * r, ny * r, nz * r);
+            }
+            positionAttribute.needsUpdate = true; // Force WebGL to redraw the new physics
+
+            // Entire quantum cloud slowly rotates in global space
+            mathGroup.rotation.y = time * 0.5;
+            mathGroup.rotation.x = Math.sin(time) * 0.2;
+
+            // Camera Parallax
+            targetX = mouseX * 0.025;
+            targetY = mouseY * 0.025;
             
-            cursorX += dx * 0.15;
-            cursorY += dy * 0.15;
+            camera.position.x += (targetX - camera.position.x) * 0.05;
+            camera.position.y += (-targetY - camera.position.y) * 0.05;
             
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
+            // Push camera through the quantum field based on scroll depth
+            camera.position.z = 45 - (scrollY * 0.015);
             
-            requestAnimationFrame(animateCursor);
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
         }
-        animateCursor();
 
-        // Cursor hover effects on links/buttons
-        const interactables = document.querySelectorAll('a, button, input, textarea, .madness-text');
-        interactables.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.width = '50px';
-                cursor.style.height = '50px';
-                cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                cursor.style.borderColor = 'transparent';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.width = '20px';
-                cursor.style.height = '20px';
-                cursor.style.backgroundColor = 'transparent';
-                cursor.style.borderColor = 'var(--gold)';
-            });
-        });
-
-        // --- Premium Three.js Particle Matrix (The "React Site" feel) ---
-        window.onload = function() {
-            const canvas = document.getElementById('webgl-canvas');
-            const scene = new THREE.Scene();
-            // Deep fog to hide the edges gracefully
-            scene.fog = new THREE.FogExp2(0x030303, 0.002);
-
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-            camera.position.set(0, 200, 400);
-
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // optimize performance
+        });
 
-            // Cinematic Wireframe Terrain (The mathematical/blueprint aesthetic)
-            const geometry = new THREE.PlaneGeometry(2000, 2000, 60, 60);
-            geometry.rotateX(-Math.PI / 2);
+        window.onload = animate;
 
-            // Add variance to the vertices for a terrain look
-            const vertices = geometry.attributes.position.array;
-            for (let i = 0; i < vertices.length; i += 3) {
-                vertices[i + 1] = Math.random() * 40 - 20; 
-            }
+        // Sandevistan Logic 
+        const launchBtn = document.getElementById('activate');
+        const sandyOverlay = document.getElementById('sandy-overlay');
+        const deactivateBtn = document.getElementById('deactivate');
+        
+        // Materials to override
+        const materialsToAnimate = [meshMat, pointMat];
+        const originalColors = [0xff0000, 0xff1111];
+        const originalOpacities = [0.15, 0.9];
 
-            const material = new THREE.MeshBasicMaterial({ 
-                color: 0x333333, 
-                wireframe: true,
-                transparent: true,
-                opacity: 0.25
-            });
-
-            const plane = new THREE.Mesh(geometry, material);
-            scene.add(plane);
-
-            // Floating Mathematical Nodes (The "Genius" aesthetic)
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 200;
-            const posArray = new Float32Array(particlesCount * 3);
+        launchBtn.addEventListener('click', () => {
+            isSandevistanActive = true;
+            sandyOverlay.classList.add('active');
             
-            for(let i = 0; i < particlesCount * 3; i+=3) {
-                posArray[i] = (Math.random() - 0.5) * 1500; // x
-                posArray[i+1] = Math.random() * 500;        // y
-                posArray[i+2] = (Math.random() - 0.5) * 1500; // z
-            }
+            // Force quantum state strictly to Edgerunner Green
+            materialsToAnimate.forEach(mat => {
+                mat.color.setHex(0x00ff9d);
+                mat.opacity = 1.0;
+            });
             
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 3,
-                color: 0xd4af37, // Gold nodes
-                transparent: true,
-                opacity: 0.8
-            });
-            const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particleMesh);
+            document.body.style.cursor = 'auto'; 
+            cursorDot.style.opacity = '0';
+            cursorRing.style.opacity = '0';
+        });
 
-            // Variables for mouse parallax interaction
-            let targetX = 0;
-            let targetY = 0;
-            let scrollY = 0;
-
-            document.addEventListener('mousemove', (event) => {
-                targetX = (event.clientX - window.innerWidth / 2) * 0.1;
-                targetY = (event.clientY - window.innerHeight / 2) * 0.1;
+        deactivateBtn.addEventListener('click', () => {
+            isSandevistanActive = false;
+            sandyOverlay.classList.remove('active');
+            
+            // Restore Donda red palette
+            materialsToAnimate.forEach((mat, index) => {
+                mat.color.setHex(originalColors[index]);
+                mat.opacity = originalOpacities[index];
             });
 
-            document.addEventListener('scroll', () => {
-                scrollY = window.scrollY;
-            });
-
-            const clock = new THREE.Clock();
-
-            function animateWebGL() {
-                requestAnimationFrame(animateWebGL);
-                
-                const elapsedTime = clock.getElapsedTime();
-
-                // Animate Terrain Waves (Smooth mathematical sine waves)
-                const verts = plane.geometry.attributes.position.array;
-                for (let i = 0; i < verts.length; i += 3) {
-                    const x = verts[i];
-                    const z = verts[i + 2];
-                    verts[i + 1] = Math.sin(x * 0.005 + elapsedTime) * 20 + Math.cos(z * 0.005 + elapsedTime) * 20;
-                }
-                plane.geometry.attributes.position.needsUpdate = true;
-                
-                // Slow rotation of floating nodes
-                particleMesh.rotation.y = elapsedTime * 0.02;
-
-                // Mouse parallax effect
-                camera.position.x += (targetX - camera.position.x) * 0.05;
-                camera.position.y += (200 - targetY - camera.position.y) * 0.05;
-                
-                // Scroll parallax effect (moves the camera through the digital ocean)
-                camera.position.z = 400 - (scrollY * 0.1);
-                
-                camera.lookAt(0, 0, 0);
-
-                renderer.render(scene, camera);
-            }
-            animateWebGL();
-
-            // Handle Resize gracefully
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        }
+            document.body.style.cursor = 'none';
+            cursorDot.style.opacity = '1';
+            cursorRing.style.opacity = '1';
+        });
     </script>
 </body>
 </html>
