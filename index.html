@@ -1,623 +1,177 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EGO | Physics Prodigy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js for Cinematic Black Hole Background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Editorial Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <title>Ego's Website</title>
     
     <style>
-        :root {
-            --blood: #990000;
-            --void: #050505;
-            --text-main: #e5e5e5;
-            --text-muted: #666666;
-        }
+        /* 
+           MY CUSTOM CSS 
+           Writing this by hand to keep it simple and clean. 
+        */
         
         body {
-            background-color: var(--void);
-            color: var(--text-main);
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-            cursor: none; /* Custom cursor */
+            background-color: #111111;
+            color: #dddddd;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        h1, h2, h3, .bebas {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 0.05em;
+        /* Basic centered box layout */
+        .container {
+            width: 85%;
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #222222; 
+            border: 3px solid #444444;
+            padding: 20px;
         }
 
-        .mono {
-            font-family: 'Space Mono', monospace;
+        h1, h2, h3 {
+            color: #ff5555;
+            font-family: "Courier New", Courier, monospace;
         }
 
-        /* The Custom Cursor */
-        #cursor-dot, #cursor-ring {
-            position: fixed;
-            top: 0; left: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        #cursor-dot {
-            width: 6px; height: 6px;
-            background-color: var(--blood);
-            transition: width 0.2s, height 0.2s;
-        }
-        #cursor-ring {
-            width: 30px; height: 30px;
-            border: 1px solid rgba(153, 0, 0, 0.5);
-            transition: width 0.2s, height 0.2s, border-color 0.2s, transform 0.1s ease-out;
+        h1 {
+            border-bottom: 2px solid #ff5555;
+            padding-bottom: 5px;
         }
 
-        /* 3D Background Container */
-        #canvas-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: -1;
-            pointer-events: none;
-            background: #000000; /* Pure black to blend with the event horizon */
+        /* Very simple blocky navigation */
+        .nav-menu {
+            background-color: #333333;
+            padding: 10px;
+            border: 1px solid #ff5555;
+            text-align: center;
         }
 
-        /* Brutalist Borders & Aesthetics */
-        .brutal-border {
-            border: 1px solid #1a1a1a;
-            border-left: 3px solid var(--blood);
-            background: rgba(5, 5, 5, 0.6);
-            backdrop-filter: blur(5px);
+        .nav-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .brutal-border:hover {
-            border-color: var(--blood);
-            background: rgba(15, 0, 0, 0.8);
+        .nav-menu li {
+            display: inline;
+            margin: 0 15px;
         }
 
-        /* Aura Text Effect */
-        .aura-text {
-            color: transparent;
-            -webkit-text-stroke: 1px var(--blood);
-            transition: all 0.4s ease;
-            position: relative;
-        }
-        
-        .aura-text::before {
-            content: attr(data-text);
-            position: absolute;
-            left: 0; top: 0;
-            color: var(--blood);
-            width: 0%;
-            overflow: hidden;
-            transition: width 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-            white-space: nowrap;
-            text-shadow: 0 0 20px var(--blood);
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
         }
 
-        .group:hover .aura-text::before,
-        .aura-text:hover::before {
-            width: 100%;
+        .nav-menu a:hover {
+            text-decoration: underline;
+            color: #ff5555;
         }
 
-        /* God-Complex Glitch */
-        .glitch-hover:hover {
-            animation: glitch-anim 0.2s infinite;
-            color: var(--blood);
-            text-shadow: 2px 0 0 #fff, -2px 0 0 #ff0000;
+        .project-box {
+            border: 2px dashed #777777;
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
-        @keyframes glitch-anim {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 1px) }
-            40% { transform: translate(-1px, -1px) }
-            60% { transform: translate(2px, 1px) }
-            80% { transform: translate(1px, -1px) }
-            100% { transform: translate(0) }
+        .project-box:hover {
+            border-color: #ff5555;
         }
 
-        /* Reveal Animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.2, 1, 0.2, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        .skill-tag {
+            background-color: #ff5555;
+            color: black;
+            padding: 2px 6px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 3px;
         }
 
-        /* NEW: Cinematic Grain & Boot Screen */
-        .grain {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            pointer-events: none;
-            z-index: 9998;
-            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.5"/%3E%3C/svg%3E');
-            opacity: 0.05;
-            mix-blend-mode: screen;
+        /* Basic box for my goals */
+        .goals-box {
+            background-color: #333333;
+            padding: 15px;
+            border: 1px solid #555555;
         }
 
-        .boot-screen {
-            position: fixed;
-            inset: 0;
-            background: #030303;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding-left: 10%;
-            transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1);
+        .goals-box ul {
+            margin-top: 10px;
+            padding-left: 25px;
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--void); }
-        ::-webkit-scrollbar-thumb { background: #333; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--blood); }
+        .goals-box li {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .music-section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #000000;
+            border-left: 5px solid #ff5555;
+        }
     </style>
 </head>
-<body class="antialiased selection:bg-[#990000] selection:text-white">
+<body>
 
-    <!-- NEW: Cinematic Overlays -->
-    <div class="grain"></div>
-    <div id="boot-screen" class="boot-screen">
-        <div id="boot-text" class="mono text-[#990000] text-sm md:text-base leading-relaxed tracking-widest whitespace-pre-wrap"></div>
+    <div class="container">
+        
+        <div class="nav-menu">
+            <ul>
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#projects">My Projects</a></li>
+                <li><a href="#next">What's Next</a></li>
+            </ul>
+        </div>
+
+        <h1>Ego's Personal Website</h1>
+        <p>Hey, I'm Ego. I am in 11th grade. I like playing state-level basketball, listening to Kanye West, and building hardware stuff in my garage.</p>
+        <p>My biggest goal right now is to get into MIT to study Aerospace Engineering.</p>
+
+        <h2 id="about">About Me</h2>
+        <p>When I am not playing basketball, I am usually coding or reading about physics. I really like astrophysics and fluid dynamics. I try not to use game engines like Unity because I prefer to write the raw C++ code myself so I actually learn the math behind it.</p>
+        
+        <div class="music-section">
+            <h3>Currently Listening To</h3>
+            <p>MBDTF is the best album ever. I just leave this on loop while I write code.</p>
+            <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/in/album/my-beautiful-dark-twisted-fantasy-deluxe-edition-explicit/1440621197"></iframe>
+        </div>
+
+        <h2 id="projects">Stuff I Built</h2>
+        
+        <div class="project-box">
+            <span class="skill-tag">Hardware</span>
+            <h3>Valveless Pulsejet Engine</h3>
+            <p>I built a working pulsejet engine in my garage. It uses acoustic resonance to keep the combustion going without any moving parts. It is ridiculously loud (over 100 decibels) and was a really fun way to learn about fluid dynamics.</p>
+        </div>
+
+        <div class="project-box">
+            <span class="skill-tag">C++</span>
+            <h3>Black Hole Physics Simulator</h3>
+            <p>A physics engine I wrote completely from scratch in C++. I used Runge-Kutta integration to solve the math for gravitational lensing around a black hole instead of using a pre-made engine.</p>
+        </div>
+
+        <div class="project-box">
+            <span class="skill-tag">Python</span>
+            <h3>Meteor Tracking Camera</h3>
+            <p>I connected a camera to my telescope and wrote a Python script using OpenCV. It tracks the night sky and filters out airplanes so I can log real meteor entries in the atmosphere.</p>
+        </div>
+
+        <h2 id="next">What I am Learning Next</h2>
+        <p>I am always trying to figure out how things work. Here is what I am focusing on right now:</p>
+        
+        <div class="goals-box">
+            <ul>
+                <li><strong>TIG Welding:</strong> I need to learn how to weld properly so my jet engines stop shaking themselves apart in the garage.</li>
+                <li><strong>Calculus III:</strong> I am self-studying multivariable calculus because standard high school math isn't enough for the physics simulations I want to build.</li>
+                <li><strong>Neural Networks in C++:</strong> I want to write a basic AI from scratch without using Python libraries like TensorFlow, just to see the raw math in action.</li>
+            </ul>
+        </div>
+
     </div>
 
-    <!-- Custom Cursor DOM -->
-    <div id="cursor-dot"></div>
-    <div id="cursor-ring"></div>
-
-    <!-- 3D Gargantua Black Hole Engine -->
-    <div id="canvas-container"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 top-0 mix-blend-difference border-b border-[#1a1a1a]">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between items-center h-20 text-xs mono uppercase tracking-widest text-gray-400">
-                <a href="#home" class="hover:text-white transition-colors">[ EGO_V1.0 ]</a>
-                <div class="hidden md:flex space-x-12">
-                    <a href="#about" class="hover:text-[#990000] transition-colors">01. IDENT</a>
-                    <a href="#projects" class="hover:text-[#990000] transition-colors">02. ARSENAL</a>
-                    <a href="#contact" class="hover:text-[#990000] transition-colors">03. CLINIC</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header id="home" class="min-h-screen flex items-center relative z-10 pt-20">
-        <div class="max-w-7xl mx-auto px-6 w-full">
-            <div class="max-w-4xl">
-                <p class="mono text-[#990000] text-sm md:text-base mb-6 tracking-widest uppercase">Target: MIT Aerospace & Physics</p>
-                <h1 class="text-7xl md:text-[150px] leading-[0.8] mb-8 glitch-hover cursor-interact" data-text="I AM EGO.">
-                    I AM EGO.
-                </h1>
-                
-                <div class="brutal-border p-6 md:p-8 max-w-2xl mt-12">
-                    <p class="text-xl md:text-2xl font-light leading-relaxed">
-                        My name is Ego. I am a high school physicist. And I am going to steal your lab time.
-                    </p>
-                    <p class="mt-4 text-gray-500 text-sm mono uppercase tracking-wider">
-                        Grade 11 // Physics Prodigy // State Athlete
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-10 left-6 mono text-xs text-gray-600 tracking-widest uppercase animate-pulse">
-            [ Scroll to Execute ]
-        </div>
-    </header>
-
-    <!-- About Section -->
-    <section id="about" class="py-32 relative z-10 border-t border-[#1a1a1a]">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
-                <div class="md:col-span-4 reveal">
-                    <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">01 // IDENT</h2>
-                    <h3 class="text-5xl md:text-7xl aura-text cursor-interact" data-text="THE BLUEPRINT">THE BLUEPRINT</h3>
-                </div>
-                
-                <div class="md:col-span-8 space-y-12 reveal">
-                    <div class="text-2xl md:text-4xl font-light leading-tight space-y-8">
-                        <p>
-                            I don't study physics to pass exams. I study physics because it is the source code of reality, and I intend to have admin access.
-                        </p>
-                        
-                        <!-- The Manifesto Blockquote -->
-                        <blockquote class="border-l-4 border-[#990000] pl-6 py-2 my-12 bg-[#050505] mix-blend-screen">
-                            <p class="text-gray-400 text-lg mono mb-2 uppercase">Core Philosophy:</p>
-                            <p class="text-3xl md:text-5xl font-bold italic">
-                                "I DO NOT COMPETE WITH MY PEERS. <br>
-                                <span class="text-[#990000]">I OBSOLETE THEM.</span>"
-                            </p>
-                        </blockquote>
-
-                        <p class="text-gray-400 text-lg md:text-xl font-normal max-w-2xl">
-                            When I'm not running tensor calculus for aerodynamic simulations, I play basketball at the state level. The court isn't just a game; it's applied kinematics. Like Patrick Jane said: 
-                            <span class="text-white italic">"I don't guess. I observe."</span> I calculate the arc, the backspin, the friction. It's all math.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="py-32 relative z-10 bg-black/50 border-t border-[#1a1a1a]">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="mb-20 reveal group">
-                <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">02 // ARSENAL</h2>
-                <h3 class="text-5xl md:text-[100px] leading-none aura-text cursor-interact" data-text="THE_ARSENAL">THE_ARSENAL</h3>
-                <p class="text-[#990000] mono text-sm mt-4 uppercase">Not Lupus. Just Math.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Pulsejet -->
-                <div class="brutal-border p-8 reveal cursor-interact group">
-                    <div class="flex justify-between items-start mb-12">
-                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">01</span>
-                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Acoustics & Thermodynamics</span>
-                    </div>
-                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Valveless Pulsejet Engine</h4>
-                    <p class="text-gray-400 text-sm md:text-base">
-                        Built entirely in my backyard. Applied principles of acoustic resonance and fluid dynamics to create self-sustaining combustion. 
-                        It is incredibly inefficient, extremely dangerous, and loud enough to deafen the neighborhood. It works perfectly.
-                    </p>
-                </div>
-
-                <!-- Black Hole -->
-                <div class="brutal-border p-8 reveal cursor-interact group">
-                    <div class="flex justify-between items-start mb-12">
-                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">02</span>
-                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">C++ / Runge-Kutta Math</span>
-                    </div>
-                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Schwarzschild Simulator</h4>
-                    <p class="text-gray-400 text-sm md:text-base">
-                        Wrote a pure C++ raymarching engine to simulate photon trajectories around a non-rotating black hole. 
-                        No game engines. Just raw differential equations and the Schwarzschild metric solving light paths frame-by-frame.
-                    </p>
-                </div>
-
-                <!-- Meteor Telescope -->
-                <div class="brutal-border p-8 reveal cursor-interact group">
-                    <div class="flex justify-between items-start mb-12">
-                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">03</span>
-                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Optics & Hardware</span>
-                    </div>
-                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Autonomous Meteor Array</h4>
-                    <p class="text-gray-400 text-sm md:text-base">
-                        Custom-built optical telescope rigged to a tracking mount I programmed from scratch. It uses computer vision to detect and track fast-moving atmospheric entries (meteors) while filtering out satellites. 
-                    </p>
-                </div>
-
-                <!-- Apollo's Bastard -->
-                <div class="brutal-border p-8 reveal cursor-interact group">
-                    <div class="flex justify-between items-start mb-12">
-                        <span class="text-4xl text-white group-hover:text-[#990000] transition-colors">04</span>
-                        <span class="mono text-xs text-gray-600 border border-gray-800 px-2 py-1 uppercase">Target: The Moon</span>
-                    </div>
-                    <h4 class="text-3xl md:text-4xl font-bold mb-4">Project: Apollo's Bastard</h4>
-                    <p class="text-gray-400 text-sm md:text-base">
-                        Current ongoing endeavor. The math is done. The propellants are calculated. MIT is just the funding pitstop I need before I launch a homemade orbital payload. 
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-32 relative z-10 border-t border-[#1a1a1a]">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-xl mono text-gray-500 uppercase tracking-widest mb-4">03 // CLINIC</h2>
-                <h3 class="text-5xl md:text-7xl font-bold mb-6">THE CLINIC</h3>
-                <p class="text-gray-400 mono max-w-lg mx-auto">
-                    "Everybody lies. Math doesn't." <br>
-                    Admissions officers, engineers, or people who just appreciate greatness—step into the clinic.
-                </p>
-            </div>
-            
-            <form class="space-y-6 reveal">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs mono text-gray-500 mb-2 uppercase">Subject ID (Name)</label>
-                        <input type="text" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="Dr. Gregory House">
-                    </div>
-                    <div>
-                        <label class="block text-xs mono text-gray-500 mb-2 uppercase">Clearance Level (Email)</label>
-                        <input type="email" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="admissions@mit.edu">
-                    </div>
-                </div>
-                <div class="pt-4">
-                    <label class="block text-xs mono text-gray-500 mb-2 uppercase">Diagnosis (The Message)</label>
-                    <textarea rows="4" class="w-full bg-[#050505] border-b border-gray-800 px-0 py-3 text-white focus:outline-none focus:border-[#990000] transition-colors cursor-interact" placeholder="Your calculus on the pulsejet was undeniable..."></textarea>
-                </div>
-                
-                <div class="pt-8 text-center group">
-                    <button type="button" class="cursor-interact relative overflow-hidden border border-gray-800 px-12 py-4 mono uppercase tracking-widest text-sm hover:border-[#990000] transition-colors w-full md:w-auto">
-                        <span class="relative z-10 group-hover:text-black transition-colors duration-300 font-bold">Initiate Transmission</span>
-                        <div class="absolute inset-0 bg-[#990000] transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0 flex items-center justify-center">
-                            <span class="text-black font-bold">WAKE UP SAMURAI</span>
-                        </div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <footer class="py-8 border-t border-[#1a1a1a] text-center relative z-10 bg-black">
-        <p class="mono text-xs text-gray-600">
-            ENGINEERED BY EGO // HTML. CSS. RAW MATH. <br>
-            <span class="opacity-30 hover:opacity-100 hover:text-[#990000] transition-all cursor-crosshair">:-)</span>
-        </p>
-    </footer>
-
-    <!-- Interactive Logic & Physics Engine -->
-    <script>
-        // =====================================================================
-        // UI & BOOT LOGIC
-        // =====================================================================
-        const bootScreen = document.getElementById('boot-screen');
-        const bootText = document.getElementById('boot-text');
-        const bootLines = [
-            "INITIALIZING EGO_V1.0...",
-            "BYPASSING STANDARD ADMISSIONS PROTOCOLS...",
-            "RESOLVING CALABI-YAU MANIFOLDS...",
-            "CALCULATING AMPLITUHEDRON VOLUME...",
-            "ACCESS GRANTED. WAKE UP."
-        ];
-        
-        let lineIndex = 0;
-        let charIndex = 0;
-        
-        function typeWriter() {
-            if (lineIndex < bootLines.length) {
-                if (charIndex < bootLines[lineIndex].length) {
-                    bootText.innerHTML += bootLines[lineIndex].charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeWriter, Math.random() * 30 + 10);
-                } else {
-                    bootText.innerHTML += '<br><br>';
-                    lineIndex++;
-                    charIndex = 0;
-                    setTimeout(typeWriter, 200);
-                }
-            } else {
-                setTimeout(() => {
-                    bootScreen.style.opacity = '0';
-                    setTimeout(() => { bootScreen.style.display = 'none'; }, 1000);
-                }, 500);
-            }
-        }
-        
-        window.addEventListener('load', () => {
-            setTimeout(typeWriter, 500);
-        });
-
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        const interactables = document.querySelectorAll('.cursor-interact, a, button, input, textarea');
-
-        // Global mouse position tracking for WebGL Shader interaction
-        const mouse3D = new THREE.Vector3(0, 0, 0);
-        const planeZ0 = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-        const raycaster = new THREE.Raycaster();
-        let mouseX = 0; let mouseY = 0; let scrollY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            // DOM Cursor
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            setTimeout(() => {
-                ring.style.left = e.clientX + 'px';
-                ring.style.top = e.clientY + 'px';
-            }, 50);
-
-            // ThreeJS Mouse Coordinates
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        interactables.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                dot.style.transform = 'translate(-50%, -50%) scale(0)';
-                ring.style.width = '50px';
-                ring.style.height = '50px';
-                ring.style.borderColor = '#990000';
-                ring.style.backgroundColor = 'rgba(153,0,0,0.1)';
-            });
-            el.addEventListener('mouseleave', () => {
-                dot.style.transform = 'translate(-50%, -50%) scale(1)';
-                ring.style.width = '30px';
-                ring.style.height = '30px';
-                ring.style.borderColor = 'rgba(153, 0, 0, 0.5)';
-                ring.style.backgroundColor = 'transparent';
-            });
-        });
-
-        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
-        });
-
-        window.addEventListener('scroll', () => { scrollY = window.scrollY; });
-
-        // =====================================================================
-        // THREE.JS: GPU-ACCELERATED QUANTUM TOPOLOGY (GLSL SHADERS)
-        // =====================================================================
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.02); 
-        
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 32); 
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        // 1. THE AMPLITUHDRON (Wireframe Core)
-        const ampGeometry = new THREE.IcosahedronGeometry(4, 2);
-        const ampMaterial = new THREE.MeshBasicMaterial({
-            color: 0xff0000, wireframe: true, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending
-        });
-        const amplituhedron = new THREE.Mesh(ampGeometry, ampMaterial);
-        scene.add(amplituhedron);
-
-        // 2. THE QUANTUM SUPERFLUID (GPU Particles)
-        // We push 250,000 particles directly to the GPU instead of looping in JS
-        const particleCount = 250000; 
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const randoms = new Float32Array(particleCount);
-
-        const R = 3.5;
-        for(let i = 0; i < particleCount; i++) {
-            let t = Math.random() * Math.PI * 2;
-            
-            // Base Trefoil knot math
-            let x0 = R * (Math.sin(t) + 2 * Math.sin(2 * t));
-            let y0 = R * (Math.cos(t) - 2 * Math.cos(2 * t));
-            let z0 = R * (-Math.sin(3 * t));
-
-            // Volumetric dispersion
-            let spread = Math.pow(Math.random(), 3) * 5.0; 
-            let theta = Math.random() * Math.PI * 2;
-            let phi = Math.acos(2 * Math.random() - 1);
-            
-            positions[i*3] = x0 + spread * Math.sin(phi) * Math.cos(theta);
-            positions[i*3+1] = y0 + spread * Math.sin(phi) * Math.sin(theta);
-            positions[i*3+2] = z0 + spread * Math.cos(phi);
-
-            randoms[i] = Math.random(); // Unique identifier for quantum fluctuation
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
-
-        const shaderMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 },
-                mouse3D: { value: new THREE.Vector3(0, 0, 0) }
-            },
-            vertexShader: `
-                uniform float time;
-                uniform vec3 mouse3D;
-                attribute float aRandom;
-                varying vec3 vColor;
-                
-                void main() {
-                    vec3 pos = position;
-                    
-                    // Quantum Fluctuation (Boiling effect based on time & unique random)
-                    float noise = sin(time * 2.0 + aRandom * 10.0) * 0.3;
-                    pos += normalize(pos) * noise;
-
-                    // Gravity Well Interaction (Mouse Repulsion)
-                    // The closer the particle is to the mouse projection, the harder it gets pushed away
-                    float dist = distance(pos, mouse3D);
-                    float force = max(0.0, 8.0 - dist); // 8.0 is the radius of gravity
-                    pos += normalize(pos - mouse3D) * (force * 0.6);
-                    
-                    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    // Size attenuation based on depth and randomness
-                    gl_PointSize = (25.0 / -mvPosition.z) * (aRandom + 0.3);
-                    gl_Position = projectionMatrix * mvPosition;
-
-                    // Color assignment based on distance from the mathematical core
-                    float coreDist = length(position) / 10.0;
-                    vec3 coreColor = vec3(1.0, 1.0, 1.0); // Absolute white-hot center
-                    vec3 midColor = vec3(1.0, 0.0, 0.0);  // Brutal Red
-                    vec3 edgeColor = vec3(0.05, 0.0, 0.0); // Dark void
-                    
-                    if (coreDist < 0.15) {
-                        vColor = mix(coreColor, midColor, coreDist / 0.15);
-                    } else {
-                        vColor = mix(midColor, edgeColor, (coreDist - 0.15) / 0.85);
-                    }
-                }
-            `,
-            fragmentShader: `
-                varying vec3 vColor;
-                void main() {
-                    // Create soft circular glowing particles
-                    float dist = length(gl_PointCoord - vec2(0.5));
-                    if (dist > 0.5) discard;
-                    
-                    // Smooth glow curve
-                    float alpha = pow((0.5 - dist) * 2.0, 1.5); 
-                    gl_FragColor = vec4(vColor, alpha * 0.9);
-                }
-            `,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-
-        const particleSystem = new THREE.Points(geometry, shaderMaterial);
-        scene.add(particleSystem);
-
-        const clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-            
-            // Pass time to the GPU shader
-            shaderMaterial.uniforms.time.value = time;
-
-            // Calculate exact 3D position of the mouse on the Z=0 plane
-            raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
-            raycaster.ray.intersectPlane(planeZ0, mouse3D);
-            shaderMaterial.uniforms.mouse3D.value.copy(mouse3D);
-
-            // Rotate the entire system
-            particleSystem.rotation.y = time * 0.1;
-            particleSystem.rotation.z = time * 0.05;
-
-            // Counter-rotate and pulse the Amplituhedron
-            amplituhedron.rotation.y = -time * 0.15;
-            amplituhedron.rotation.x = time * 0.1;
-            let scale = 1 + Math.sin(time * 3) * 0.05;
-            amplituhedron.scale.set(scale, scale, scale);
-
-            // Parallax camera movement based on scroll and mouse
-            const targetX = mouseX * 4;
-            const targetY = mouseY * 4 - (scrollY * 0.008);
-            
-            camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (targetY - camera.position.y) * 0.05;
-            camera.lookAt(0, -scrollY * 0.003, 0);
-
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Loop started on window load inside the boot sequence timeout to save resources
-        animate();
-    </script>
 </body>
 </html>
